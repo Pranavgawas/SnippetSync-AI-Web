@@ -14,38 +14,62 @@
     </nav>
 
     <section style="padding: 120px 24px 80px; max-width: 800px; margin: 0 auto;">
-        <h1>Privacy Policy</h1>
-        <p><strong>Last updated:</strong> July 2024</p>
+        <h1>Privacy Policy for SnippetSyncAi</h1>
+        <p><strong>Last Updated:</strong> 23-12-25</p>
 
-        <h2>Overview</h2>
-        <p>SnippetSyncAi is committed to protecting your privacy. This policy explains how we handle your data.</p>
+        <h2>1. Introduction</h2>
+        <p>SnippetSyncAi ("we", "our", or "us") is committed to protecting your privacy. This Privacy Policy explains how our Chrome Extension collects, uses, and discloses your information.</p>
+        <p>Our core philosophy is <strong>Offline-First</strong>. We believe your text data belongs to you.</p>
 
-        <h2>Data We Collect</h2>
-        <p><strong>Free Plan:</strong> We collect nothing. All your snippets are stored locally on your device using Chrome's built-in storage. We never see, access, or transmit your data.</p>
-        <p><strong>Pro Plan:</strong> If you choose to enable Cloud Sync, your snippets are encrypted and stored on secure servers (Firebase). We use this data only to sync your snippets across devices.</p>
+        <h2>2. Data We Collect</h2>
 
-        <h2>Data We Do NOT Collect</h2>
+        <h4>A. User Content (Snippets)</h4>
+        <p><strong>We do not collect, store, or transmit your text snippets to our servers.</strong></p>
+        <p>All text snippets, shortcuts, and templates you create are stored locally on your device using the Chrome Storage API (`chrome.storage.local`). This data never leaves your browser unless you explicitly opt-in to future cloud sync features.</p>
+
+        <h4>B. License Keys (Pro Plan)</h4>
+        <p>If you upgrade to the Pro plan, you will be asked to enter a License Key.</p>
         <ul>
-            <li>We do not track your browsing history</li>
-            <li>We do not sell your data to third parties</li>
-            <li>We do not use your data for advertising</li>
-            <li>We do not read the contents of your snippets</li>
+            <li><strong>What we do:</strong> We transmit this License Key to our payment provider (<strong>Lemon Squeezy</strong>) via a secure API request to verify your subscription status.</li>
+            <li><strong>What we do NOT do:</strong> We do <strong>not</strong> send your snippets, browsing history, or personal information during this verification process. We only check if the key is valid.</li>
         </ul>
 
-        <h2>Payments</h2>
-        <p>Payments are processed by Lemon Squeezy. We never see or store your credit card information.</p>
+        <h4>C. Website Interaction</h4>
+        <p>To function as a text expander, SnippetSyncAi requires access to the text fields on the websites you visit.</p>
+        <ul>
+            <li>The extension detects when you type a specific keyword (e.g., `/email`).</li>
+            <li>It replaces that keyword with your saved snippet.</li>
+            <li><strong>We do not log your keystrokes.</strong> The extension only "listens" locally for your specific shortcuts.</li>
+        </ul>
 
-        <h2>Your Rights</h2>
-        <p>You can delete all your data at any time by uninstalling the extension. For Pro users, contact us to request complete data deletion from our servers.</p>
+        <h2>3. Third-Party Services</h2>
+        <p>We use the following trusted third-party service to handle payments and license verification:</p>
+        <ul>
+            <li><strong>Lemon Squeezy:</strong> We use Lemon Squeezy to process payments and validate license keys. You can review their privacy policy at <a href="https://www.lemonsqueezy.com/privacy" target="_blank">lemonsqueezy.com/privacy</a>.</li>
+        </ul>
 
-        <h2>Contact</h2>
-        <p>Questions? Email us at: <a href="mailto:hello@snippetsyncai.app">hello@snippetsyncai.app</a></p>
+        <h2>4. Permissions</h2>
+        <p>SnippetSyncAi requests the following permissions to function:</p>
+        <ul>
+            <li><strong>Storage:</strong> To save your snippets locally on your device.</li>
+            <li><strong>Host Permissions (&lt;all_urls&gt;):</strong> To allow the text expansion feature to work on any website you visit (e.g., Gmail, LinkedIn, Outlook).</li>
+        </ul>
+
+        <h2>5. Data Security</h2>
+        <p>We implement industry-standard security measures. Your Pro status is verified using secure HTTPS requests. Since your personal text snippets are stored locally on your machine, they are as secure as your personal computer.</p>
+
+        <h2>6. Changes to This Policy</h2>
+        <p>We may update this Privacy Policy from time to time. If we make significant changes (such as introducing Cloud Sync), we will notify you through the extension or our website.</p>
+
+        <h2>7. Contact Us</h2>
+        <p>If you have any questions about this Privacy Policy, please contact us at:</p>
+        <p><strong>Email:</strong> <a href="pranavgawas1999@gmail.com">pranavgawas1999@gmail.com</a></p>
     </section>
 
     <footer class="footer">
         <div class="container">
             <div class="footer-bottom">
-                <p>© 2024 SnippetSyncAi. All rights reserved.</p>
+                <p>© 2025 SnippetSyncAi. All rights reserved.</p>
             </div>
         </div>
     </footer>
