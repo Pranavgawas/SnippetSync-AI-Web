@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Community Snippets - SnippetSyncAi</title>
     <meta name="description" content="Browse thousands of free text expander snippets shared by the community. Email templates, code snippets, and more.">
+    <script src="env.js"></script>
+    <script type="module" src="auth-guard.js"></script>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -312,10 +314,8 @@
                 currentUser = user;
                 showUserInfo(user);
                 loadSnippets();
-            } else {
-                // Redirect to login if not authenticated
-                window.location.href = 'login.html';
             }
+            // The auth-guard.js script now handles the redirection
         });
         
         function showUserInfo(user) {
