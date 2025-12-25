@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://snippetsyncai-website.vercel.app/sitemap.xml
+Sitemap: https://snippetsync-ai-web-22477-cf36a.web.app/sitemap.xml
