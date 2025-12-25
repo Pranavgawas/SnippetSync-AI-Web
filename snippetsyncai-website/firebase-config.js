@@ -3,15 +3,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebas
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, limit, updateDoc, doc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyA8LWwPniF_vnf9P3-CDSInoH_sVqfs-DA",
-  authDomain: "snippetsync-ai-web-22477-cf36a.firebaseapp.com",
-  projectId: "snippetsync-ai-web-22477-cf36a",
-  storageBucket: "snippetsync-ai-web-22477-cf36a.firebasestorage.app",
-  messagingSenderId: "485731264278",
-  appId: "1:485731264278:web:c8ca7580e52dbaee751237"
-};
+// Your web app's Firebase configuration is in env.js
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
