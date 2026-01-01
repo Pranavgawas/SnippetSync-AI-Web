@@ -1,6 +1,55 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     
+    // --- MOBILE MENU TOGGLE ---
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    const mobileNavLinks = document.getElementById('mobileNavLinks');
+    const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+    
+    if (mobileMenuToggle) {
+        mobileMenuToggle.addEventListener('click', () => {
+            const isActive = mobileNavLinks.classList.contains('active');
+            
+            if (isActive) {
+                closeMobileMenu();
+            } else {
+                openMobileMenu();
+            }
+        });
+    }
+    
+    function openMobileMenu() {
+        mobileNavLinks.classList.add('active');
+        mobileMenuOverlay.style.display = 'block';
+        setTimeout(() => {
+            mobileMenuOverlay.classList.add('active');
+        }, 10);
+        document.body.style.overflow = 'hidden';
+        mobileMenuToggle.textContent = '✕';
+    }
+    
+    function closeMobileMenu() {
+        mobileNavLinks.classList.remove('active');
+        mobileMenuOverlay.classList.remove('active');
+        setTimeout(() => {
+            mobileMenuOverlay.style.display = 'none';
+        }, 300);
+        document.body.style.overflow = '';
+        mobileMenuToggle.textContent = '☰';
+    }
+    
+    // Close menu when clicking overlay
+    if (mobileMenuOverlay) {
+        mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+    }
+    
+    // Close menu when clicking a link
+    if (mobileNavLinks) {
+        mobileNavLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', closeMobileMenu);
+        });
+    }
+    
     // --- DEMO INTERACTION ---
     const demoInput = document.getElementById('demoInput');
     const demoTooltip = document.getElementById('demoTooltip');

@@ -75,6 +75,7 @@ ul {
     font-weight: 700;
     margin-bottom: 16px;
     background: linear-gradient(to right, #fff, #94a3b8);
+    background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -86,6 +87,7 @@ ul {
 
 .gradient-text {
     background: var(--gradient);
+    background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -156,10 +158,10 @@ ul {
     justify-content: space-between;
     align-items: center;
     height: 70px;
-    @extend .container;
-    padding: 0 24px;
+    /* Container styles manually applied since @extend is not supported in CSS */
     max-width: 1200px;
     margin: 0 auto;
+    padding: 0 24px;
 }
 
 .logo {
@@ -677,26 +679,35 @@ ul {
    ============================================ */
 .cta-section {
     padding: 100px 0;
-    background: var(--gradient);
     text-align: center;
-    color: white;
+    background: transparent;
+}
+
+.cta-section .container {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 60px 24px;
+    background-image: radial-gradient(circle at center, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
 }
 
 .cta-section h2 {
-    font-size: 40px;
+    font-size: 32px;
     font-weight: 800;
     margin-bottom: 16px;
+    color: var(--text-primary);
 }
 
 .cta-section p {
     font-size: 18px;
     margin-bottom: 32px;
-    opacity: 0.9;
+    color: var(--text-secondary);
 }
 
+/* Remove button override so it uses default btn-primary styles */
 .cta-section .btn-primary {
-    background: white;
-    color: var(--primary);
+    background: var(--primary);
+    color: white;
 }
 
 .footer {
@@ -743,11 +754,332 @@ ul {
 }
 
 /* ============================================
-   RESPONSIVE
+   MOBILE NAVIGATION
    ============================================ */
-@media (max-width: 768px) {
-    .hero h1 { font-size: 40px; }
-    .nav-links { display: none; }
-    .browser-mockup { display: none; } /* Hide complex demo on mobile */
-    .cta-section h2 { font-size: 32px; }
+.mobile-menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: 24px;
+    cursor: pointer;
+    padding: 8px;
+    z-index: 101;
+}
+
+.mobile-menu-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(8px);
+    z-index: 99;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.mobile-menu-overlay.active {
+    opacity: 1;
+}
+
+.mobile-nav-links {
+    display: none;
+    flex-direction: column;
+    position: fixed;
+    top: 70px;
+    left: 0;
+    right: 0;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+    padding: 20px;
+    gap: 20px;
+    z-index: 100;
+    transform: translateY(-100%);
+    transition: transform 0.3s ease;
+}
+
+.mobile-nav-links.active {
+    display: flex;
+    transform: translateY(0);
+}
+
+.mobile-nav-links a {
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.mobile-nav-links a:last-child {
+    border-bottom: none;
+}
+
+.mobile-nav-links .nav-cta {
+    background: var(--primary);
+    color: white;
+    padding: 12px 24px;
+    border-radius: var(--radius-sm);
+    text-align: center;
+    border-bottom: none;
+}
+
+/* ============================================
+   RESPONSIVE - MOBILE FIRST
+   ============================================ */
+@media (max-width: 767px) {
+    /* Container adjustments */
+    .container {
+        padding: 0 16px;
+    }
+    
+    /* Navigation */
+    .nav-container {
+        padding: 0 16px;
+    }
+    
+    .nav-links {
+        display: none;
+    }
+    
+    .mobile-menu-toggle {
+        display: block;
+    }
+    
+    .logo {
+        font-size: 18px;
+    }
+    
+    /* Hero Section */
+    .hero {
+        padding-top: 100px;
+        padding-bottom: 60px;
+    }
+    
+    .hero-container {
+        padding: 0 16px;
+    }
+    
+    .hero-badge {
+        font-size: 12px;
+        padding: 5px 12px;
+    }
+    
+    .hero h1 {
+        font-size: 36px;
+        line-height: 1.2;
+        margin-bottom: 20px;
+    }
+    
+    .hero-subtitle {
+        font-size: 16px;
+        margin-bottom: 32px;
+    }
+    
+    .hero-buttons {
+        flex-direction: column;
+        gap: 12px;
+        width: 100%;
+    }
+    
+    .hero-buttons .btn {
+        width: 100%;
+        padding: 14px 24px;
+    }
+    
+    .hero-note {
+        font-size: 12px;
+        line-height: 1.8;
+    }
+    
+    .browser-mockup {
+        display: none;
+    }
+    
+    .hero-demo-wrapper {
+        margin-top: 40px;
+        padding: 0 16px;
+    }
+    
+    /* Social Proof */
+    .social-proof {
+        padding: 30px 0;
+    }
+    
+    .social-proof p {
+        font-size: 12px;
+    }
+    
+    .logos {
+        gap: 16px;
+        font-size: 14px;
+        flex-wrap: wrap;
+    }
+    
+    /* Section Headers */
+    .section-header {
+        margin-bottom: 40px;
+    }
+    
+    .section-header h2 {
+        font-size: 28px;
+        margin-bottom: 12px;
+    }
+    
+    .section-header p {
+        font-size: 16px;
+    }
+    
+    /* Features Section */
+    .features-section {
+        padding: 60px 0;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .feature-card {
+        padding: 24px;
+    }
+    
+    .feature-card h3 {
+        font-size: 18px;
+    }
+    
+    .feature-card p {
+        font-size: 14px;
+    }
+    
+    /* Community Section */
+    .community-section {
+        padding: 60px 0;
+    }
+    
+    .community-content h2 {
+        font-size: 28px;
+    }
+    
+    .community-content p {
+        font-size: 16px;
+        margin-bottom: 32px;
+    }
+    
+    .snippet-packs {
+        flex-direction: column;
+        gap: 16px;
+        align-items: stretch;
+    }
+    
+    .pack-card {
+        width: 100%;
+    }
+    
+    /* Pricing Section */
+    .pricing-section {
+        padding: 60px 0;
+    }
+    
+    .pricing-grid {
+        flex-direction: column;
+        gap: 24px;
+        align-items: stretch;
+    }
+    
+    .pricing-card {
+        width: 100%;
+        padding: 32px 24px;
+    }
+    
+    .plan-price {
+        font-size: 40px;
+    }
+    
+    /* FAQ Section */
+    .faq-section {
+        padding: 60px 0;
+    }
+    
+    .faq-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    
+    .faq-item h3 {
+        font-size: 16px;
+    }
+    
+    .faq-item p {
+        font-size: 14px;
+    }
+    
+    /* CTA Section */
+    .cta-section {
+        padding: 60px 0;
+    }
+    
+    .cta-section .container {
+        padding: 40px 20px;
+    }
+    
+    .cta-section h2 {
+        font-size: 24px;
+        margin-bottom: 12px;
+    }
+    
+    .cta-section p {
+        font-size: 16px;
+        margin-bottom: 24px;
+    }
+    
+    /* Footer */
+    .footer {
+        padding: 40px 0 20px;
+    }
+    
+    .footer-content {
+        flex-direction: column;
+        gap: 24px;
+        margin-bottom: 24px;
+        text-align: center;
+    }
+    
+    .footer-links {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .footer-bottom {
+        font-size: 12px;
+    }
+}
+
+/* ============================================
+   RESPONSIVE - TABLET
+   ============================================ */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .container {
+        padding: 0 32px;
+    }
+    
+    .hero h1 {
+        font-size: 48px;
+    }
+    
+    .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .pricing-grid {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    
+    .pricing-card {
+        width: calc(50% - 16px);
+    }
 }
