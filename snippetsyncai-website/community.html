@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Community Snippets - SnippetSyncAi</title>
     <meta name="description" content="Browse thousands of free text expander snippets shared by the community. Email templates, code snippets, and more.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://snippetsync-ai-web-22477-cf36a.web.app/community.html">
     <script src="env.js"></script>
     <script type="module" src="auth-guard.js"></script>
     <link rel="stylesheet" href="style.css">
@@ -18,13 +20,23 @@
         }
         
         .user-info {
-            position: fixed;
-            top: 20px;
-            right: 24px;
             display: flex;
             align-items: center;
             gap: 12px;
-            z-index: 101;
+        }
+        
+        @media (max-width: 767px) {
+            .nav-links a {
+                font-size: 12px;
+            }
+            
+            .navbar {
+                padding: 0 16px; 
+            }
+            
+            .nav-container {
+                padding: 0;
+            }
         }
         
         .user-avatar {
@@ -113,6 +125,47 @@
             background: rgba(139, 92, 246, 0.1);
         }
 
+        .tags-container {
+            position: relative;
+        }
+
+        .tags-wrapper {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            max-height: 120px;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .tags-wrapper.expanded {
+            max-height: none;
+        }
+
+        .show-more-btn {
+            display: none;
+            margin: 12px auto 0;
+            padding: 6px 16px;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 100px;
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .show-more-btn:hover {
+            background: rgba(139, 92, 246, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .show-more-btn.visible {
+            display: block;
+        }
+
         .snippets-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -198,6 +251,39 @@
         .author-name {
             font-size: 13px;
             color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .verified-badge {
+            width: 16px;
+            height: 16px;
+            fill: #3b82f6;
+        }
+
+        .privacy-icon {
+            width: 16px;
+            height: 16px;
+            opacity: 0.6;
+        }
+
+        .privacy-icon.public {
+            fill: #10b981;
+        }
+
+        .privacy-icon.private {
+            fill: #6b7280;
+        }
+
+        .author-name-link {
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .author-name-link:hover .author-name {
+            color: var(--primary);
+            text-decoration: underline;
         }
 
         .install-count {
@@ -620,33 +706,305 @@
                 width: 100%;
             }
             
-            /* CTA Section */
-            .cta-section {
-                padding: 60px 0;
-            }
-            
-            .cta-section .container {
-                padding: 40px 20px;
-            }
-            
-            .cta-section h2 {
-                font-size: 24px;
-            }
-            
-            .cta-section p {
-                font-size: 16px;
-            }
-            
+
             /* Loading & Empty States */
             .loading,
             .empty-state {
                 padding: 40px 16px;
+            }
+            
+            /* Tags responsive */
+            .tags-wrapper {
+                gap: 8px;
+                max-height: 100px;
+            }
+            
+            .tag {
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+            
+            .show-more-btn {
+                font-size: 12px;
+                padding: 5px 12px;
+            }
+            
+            /* Search bar */
+            .search-container input {
+                font-size: 14px;
             }
         }
         
         @media (min-width: 768px) and (max-width: 1023px) {
             .snippets-grid {
                 grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* CUSTOM ALERT SYSTEM */
+        .custom-toast {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 20px;
+            min-width: 300px;
+            max-width: 400px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            z-index: 10000;
+            transform: translateX(500px);
+            transition: transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .custom-toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+
+        .toast-icon.success {
+            color: #10b981;
+        }
+
+        .toast-icon.error {
+            color: #ef4444;
+        }
+
+        .toast-icon.warning {
+            color: #f59e0b;
+        }
+
+        .toast-icon.info {
+            color: #3b82f6;
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+
+        .toast-message {
+            color: var(--text-secondary);
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .toast-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        .custom-confirm {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 10001;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .custom-confirm.show {
+            display: flex;
+        }
+
+        .confirm-dialog {
+            background: #2a2d3a;
+            border-radius: 16px;
+            max-width: 440px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: confirmSlideIn 0.3s ease;
+        }
+
+        @keyframes confirmSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .confirm-header {
+            padding: 24px 24px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .confirm-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .confirm-body {
+            padding: 20px 24px;
+        }
+
+        .confirm-message {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .confirm-footer {
+            padding: 16px 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .confirm-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .confirm-btn-cancel {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-secondary);
+        }
+
+        .confirm-btn-cancel:hover {
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .confirm-btn-confirm {
+            background: var(--primary);
+            color: white;
+        }
+
+        .confirm-btn-confirm:hover {
+            background: #7c3aed;
+            transform: translateY(-1px);
+        }
+
+        .confirm-btn-confirm.danger {
+            background: #ef4444;
+        }
+
+        .confirm-btn-confirm.danger:hover {
+            background: #dc2626;
+        }
+
+        @media (max-width: 767px) {
+            .custom-toast {
+                top: 16px;
+                right: 16px;
+                left: 16px;
+                min-width: auto;
+            }
+
+            .confirm-footer {
+                flex-direction: column-reverse;
+            }
+
+            .confirm-btn {
+                width: 100%;
+            }
+        }
+
+        /* VIEW TOGGLE */
+        .view-toggle-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 32px;
+        }
+        
+        .view-toggle {
+            display: inline-flex;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px;
+            border-radius: 100px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .view-btn {
+            padding: 8px 24px;
+            border-radius: 100px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .view-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+        }
+        
+        .view-btn:hover:not(.active) {
+            color: var(--text-primary);
+        }
+
+        @media (max-width: 768px) {
+            .search-hero {
+                padding: 100px 0 60px;
+            }
+            
+            .search-hero h1 {
+                font-size: 32px;
+            }
+            
+            .search-box {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .search-box input {
+                width: 100%;
+            }
+            
+            #startContributingBtn {
+                margin-left: 0 !important;
+                width: 100%;
             }
         }
     </style>
@@ -718,24 +1076,39 @@
         </div>
     </div>
 
-    <!-- USER INFO (shown when logged in) -->
-    <div id="userInfo" class="user-info" style="display: none;">
-        <div class="user-avatar" id="userAvatar"></div>
-        <button id="logoutBtn" class="logout-btn">Logout</button>
+    <!-- CUSTOM TOAST CONTAINER -->
+    <div id="toastContainer"></div>
+
+    <!-- CUSTOM CONFIRM DIALOG -->
+    <div id="customConfirm" class="custom-confirm">
+        <div class="confirm-dialog">
+            <div class="confirm-header">
+                <h3 class="confirm-title" id="confirmTitle">Confirm Action</h3>
+            </div>
+            <div class="confirm-body">
+                <p class="confirm-message" id="confirmMessage"></p>
+            </div>
+            <div class="confirm-footer">
+                <button class="confirm-btn confirm-btn-cancel" id="confirmCancel">Cancel</button>
+                <button class="confirm-btn confirm-btn-confirm" id="confirmOk">Confirm</button>
+            </div>
+        </div>
     </div>
 
     <!-- NAVIGATION -->
     <nav class="navbar">
         <div class="nav-container">
-            <a href="/" class="logo">SnippetSyncAi</a>
+            <a href="index.html" class="logo">SnippetSyncAi</a>
             <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
                 ☰
             </button>
             <div class="nav-links">
-                <a href="/index.html#features">Features</a>
-                <a href="/community.html" style="color: var(--primary);">Community</a>
-                <a href="/index.html#pricing">Pricing</a>
-                <a href="/index.html#download" class="nav-cta">Add to Chrome</a>
+                <a href="index.html" style="color: var(--text-muted);">← Back to Home</a>
+                <!-- USER INFO (shown when logged in) -->
+                <div id="userInfo" class="user-info" style="display: none;">
+                    <button id="logoutBtn" class="logout-btn">Logout</button>
+                    <div class="user-avatar" id="userAvatar" style="cursor: pointer;" title="View My Profile"></div>
+                </div>
             </div>
         </div>
     </nav>
@@ -743,29 +1116,42 @@
     <!-- MOBILE MENU OVERLAY -->
     <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
     <div class="mobile-nav-links" id="mobileNavLinks">
-        <a href="/index.html#features">Features</a>
-        <a href="/community.html" style="color: var(--primary);">Community</a>
-        <a href="/index.html#pricing">Pricing</a>
-        <a href="/index.html#download" class="nav-cta">Add to Chrome</a>
+        <a href="index.html">← Back to Home</a>
+        
+        <!-- Only shown via JS if logged in -->
+        <a href="#" id="mobileProfileLink" style="display: none;">View Profile</a>
+        <a href="#" id="mobileLogoutBtn" style="display: none;">Logout</a>
     </div>
 
     <!-- HERO SEARCH -->
     <section class="search-hero">
         <div class="container">
-            <h1>Discover <span class="gradient-text">Public Snippets</span></h1>
-            <p style="color: var(--text-secondary); margin-top: 16px;">Browse collection of templates shared by the community.</p>
-            
-            <div class="search-box">
-                <span class="search-icon">🔍</span>
-                <input type="text" id="searchInput" placeholder="Search for 'email', 'javascript', 'hr'...">
+            <div class="view-toggle-container">
+                <div class="view-toggle">
+                    <button class="view-btn active" id="viewPublic">Explore Community</button>
+                    <button class="view-btn" id="viewPersonal">My Snippets</button>
+                </div>
             </div>
 
-            <div class="tags-container">
-                <span class="tag active" data-category="all">All</span>
-                <span class="tag" data-category="Engineering">Engineering</span>
-                <span class="tag" data-category="Sales">Sales</span>
-                <span class="tag" data-category="Support">Support</span>
-                <span class="tag" data-category="Personal">Personal</span>
+            <h1 id="heroTitle">Discover <span class="gradient-text">Public Snippets</span></h1>
+            <p id="heroDesc" style="color: var(--text-secondary); margin-top: 16px;">Browse thousands of snippets shared by the community.</p>
+            
+            <div class="search-hero-content">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchInput" placeholder="Search for 'email', 'javascript', 'hr'...">
+                </div>
+                <button id="startContributingBtn" class="btn btn-primary" title="Contribute Snippet">
+                    + Contribute
+                </button>
+            </div>
+
+            <div class="tags-container" id="tagsContainer">
+                <div class="tags-wrapper" id="tagsWrapper">
+                    <span class="tag active" data-category="all">All</span>
+                    <!-- Dynamic categories will be loaded here -->
+                </div>
+                <button class="show-more-btn" id="showMoreBtn">Show More Categories</button>
             </div>
         </div>
     </section>
@@ -785,15 +1171,8 @@
             <!-- Snippets will be dynamically loaded here -->
         </div>
     </div>
-
-    <!-- CTA -->
-    <section class="cta-section">
-        <div class="container">
-            <h2>Share Your Workflow</h2>
-            <p>Create your own public pack and help others save time.</p>
-            <button id="startContributingBtn" class="btn btn-primary">Start Contributing</button>
-        </div>
-    </section>
+        
+    <!-- CTA REMOVED AS PER REQUEST -->
 
     <footer class="footer">
         <div class="container">
@@ -804,7 +1183,7 @@
     </footer>
 
     <script type="module">
-        import { auth, db, onAuthStateChanged, signOut, collection, getDocs, addDoc, deleteDoc, updateDoc, doc, query, where, orderBy, serverTimestamp, increment } from './firebase-config.js';
+        import { auth, db, onAuthStateChanged, signOut, collection, getDocs, addDoc, deleteDoc, updateDoc, doc, setDoc, onSnapshot, query, where, orderBy, serverTimestamp, increment, getDoc, getCountFromServer } from './firebase-config.js';
         
         // --- MOBILE MENU TOGGLE ---
         const mobileMenuToggle = document.getElementById('mobileMenuToggle');
@@ -814,21 +1193,15 @@
         if (mobileMenuToggle) {
             mobileMenuToggle.addEventListener('click', () => {
                 const isActive = mobileNavLinks.classList.contains('active');
-                
-                if (isActive) {
-                    closeMobileMenu();
-                } else {
-                    openMobileMenu();
-                }
+                if (isActive) closeMobileMenu();
+                else openMobileMenu();
             });
         }
         
         function openMobileMenu() {
             mobileNavLinks.classList.add('active');
             mobileMenuOverlay.style.display = 'block';
-            setTimeout(() => {
-                mobileMenuOverlay.classList.add('active');
-            }, 10);
+            setTimeout(() => mobileMenuOverlay.classList.add('active'), 10);
             document.body.style.overflow = 'hidden';
             mobileMenuToggle.textContent = '✕';
         }
@@ -836,31 +1209,105 @@
         function closeMobileMenu() {
             mobileNavLinks.classList.remove('active');
             mobileMenuOverlay.classList.remove('active');
-            setTimeout(() => {
-                mobileMenuOverlay.style.display = 'none';
-            }, 300);
+            setTimeout(() => mobileMenuOverlay.style.display = 'none', 300);
             document.body.style.overflow = '';
             mobileMenuToggle.textContent = '☰';
         }
         
-        // Close menu when clicking overlay
-        if (mobileMenuOverlay) {
-            mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+        if (mobileMenuOverlay) mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+        if (mobileNavLinks) mobileNavLinks.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMobileMenu));
+        
+        // --- CUSTOM ALERT SYSTEM ---
+        function showToast(title, message, type = 'info', duration = 4000) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'custom-toast';
+            
+            const icons = {
+                success: '<svg class="toast-icon success" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>',
+                error: '<svg class="toast-icon error" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>',
+                warning: '<svg class="toast-icon warning" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>',
+                info: '<svg class="toast-icon info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>'
+            };
+            
+            toast.innerHTML = `
+                ${icons[type] || icons.info}
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+                <button class="toast-close">✕</button>
+            `;
+            
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            
+            toast.querySelector('.toast-close').addEventListener('click', () => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            });
+            
+            if (duration > 0) {
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }, duration);
+            }
         }
         
-        // Close menu when clicking a link
-        if (mobileNavLinks) {
-            mobileNavLinks.querySelectorAll('a').forEach(link => {
-                link.addEventListener('click', closeMobileMenu);
+        function customConfirm(message, title = 'Confirm Action', isDanger = false) {
+            return new Promise((resolve) => {
+                const confirmDialog = document.getElementById('customConfirm');
+                const confirmTitle = document.getElementById('confirmTitle');
+                const confirmMessage = document.getElementById('confirmMessage');
+                const confirmOk = document.getElementById('confirmOk');
+                const confirmCancel = document.getElementById('confirmCancel');
+                
+                confirmTitle.textContent = title;
+                confirmMessage.textContent = message;
+                
+                if (isDanger) {
+                    confirmOk.classList.add('danger');
+                } else {
+                    confirmOk.classList.remove('danger');
+                }
+                
+                confirmDialog.classList.add('show');
+                
+                const handleOk = () => {
+                    confirmDialog.classList.remove('show');
+                    cleanup();
+                    resolve(true);
+                };
+                
+                const handleCancel = () => {
+                    confirmDialog.classList.remove('show');
+                    cleanup();
+                    resolve(false);
+                };
+                
+                const cleanup = () => {
+                    confirmOk.removeEventListener('click', handleOk);
+                    confirmCancel.removeEventListener('click', handleCancel);
+                };
+                
+                confirmOk.addEventListener('click', handleOk);
+                confirmCancel.addEventListener('click', handleCancel);
+                
+                confirmDialog.addEventListener('click', (e) => {
+                    if (e.target === confirmDialog) handleCancel();
+                });
             });
         }
         
+        // --- APP STATE ---
         let currentUser = null;
         let allSnippets = [];
         let currentCategory = 'all';
-        let isPublic = true; // Default to public
+        let isPublic = true; 
+        let currentView = 'public'; // 'public' | 'personal'
         
-        // DOM Elements
+        // --- DOM ELEMENTS ---
         const submissionDialog = document.getElementById('submissionDialog');
         const startContributingBtn = document.getElementById('startContributingBtn');
         const closeDialogBtn = document.getElementById('closeDialog');
@@ -870,27 +1317,70 @@
         const customCategoryInput = document.getElementById('customCategory');
         const visibilityToggle = document.getElementById('visibilityToggle');
         const visibilityLabel = document.getElementById('visibilityLabel');
+        const viewPublicBtn = document.getElementById('viewPublic');
+        const viewPersonalBtn = document.getElementById('viewPersonal');
+        const heroTitle = document.getElementById('heroTitle');
+        const heroDesc = document.getElementById('heroDesc');
         
-        // Check authentication
+        // --- AUTH & INIT ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
                 showUserInfo(user);
                 loadSnippets();
+            } else {
+                currentUser = null;
+                // If on personal view and logged out, switch to public
+                if (currentView === 'personal') {
+                    switchView('public');
+                } else {
+                    loadSnippets();
+                }
             }
-            // The auth-guard.js script now handles the redirection
         });
         
         function showUserInfo(user) {
             const userInfo = document.getElementById('userInfo');
             const userAvatar = document.getElementById('userAvatar');
-            
             const initial = (user.displayName || user.email || 'U')[0].toUpperCase();
             userAvatar.textContent = initial;
             userInfo.style.display = 'flex';
+            
+            // Mobile Menu Logic
+            const mobileProfileLink = document.getElementById('mobileProfileLink');
+            const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+            
+            if (mobileProfileLink) {
+                mobileProfileLink.style.display = 'block';
+                mobileProfileLink.onclick = (e) => {
+                    e.preventDefault();
+                    window.location.href = `profile.html?u=${user.uid}`;
+                };
+            }
+            if (mobileLogoutBtn) {
+                mobileLogoutBtn.style.display = 'block';
+                
+                // Remove old listeners to prevent duplicates if called multiple times
+                const newLogoutBtn = mobileLogoutBtn.cloneNode(true);
+                mobileLogoutBtn.parentNode.replaceChild(newLogoutBtn, mobileLogoutBtn);
+                
+                newLogoutBtn.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    try {
+                        await signOut(auth);
+                        window.location.href = 'login.html';
+                    } catch (error) {
+                        console.error('Logout error:', error);
+                    }
+                });
+            }
+            
+            // Avatar click -> Navigate to profile
+            userAvatar.addEventListener('click', () => {
+                window.location.href = `profile.html?u=${user.uid}`;
+            });
         }
         
-        // Logout
         document.getElementById('logoutBtn').addEventListener('click', async () => {
             try {
                 await signOut(auth);
@@ -900,14 +1390,539 @@
             }
         });
         
+        // --- VIEW SWITCHING ---
+        function switchView(view) {
+            currentView = view;
+            
+            // Clear URL params if switching to standard views (removes ?u=...)
+            if (window.location.search) {
+                window.history.pushState({}, '', window.location.pathname);
+            }
+            
+            if (view === 'public') {
+                viewPublicBtn.classList.add('active');
+                viewPersonalBtn.classList.remove('active');
+                heroTitle.innerHTML = 'Discover <span class="gradient-text">Public Snippets</span>';
+                heroDesc.textContent = 'Browse thousands of snippets shared by the community.';
+                document.getElementById('startContributingBtn').style.display = 'inline-flex';
+            } else {
+                viewPublicBtn.classList.remove('active');
+                viewPersonalBtn.classList.add('active');
+                heroTitle.innerHTML = 'My <span class="gradient-text">Snippet Library</span>';
+                heroDesc.textContent = 'Manage your personal collection of snippets.';
+                document.getElementById('startContributingBtn').style.display = 'inline-flex';
+            }
+            
+            // Reset filters
+            currentCategory = 'all';
+            document.getElementById('searchInput').value = '';
+            document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
+            document.querySelector('.tag[data-category="all"]').classList.add('active');
+            
+            loadSnippets();
+        }
+
+        viewPublicBtn.addEventListener('click', () => switchView('public'));
+        
+        viewPersonalBtn.addEventListener('click', () => {
+            if (!currentUser) {
+                showToast('Login Required', 'Please log in to view your snippets', 'warning');
+                setTimeout(() => window.location.href = 'login.html', 1500);
+                return;
+            }
+            switchView('personal');
+        });
+
+        // --- SNIPPET LOADING ---
+        let snippetsUnsubscribe = null;
+
+        async function loadSnippets() {
+            if (snippetsUnsubscribe) {
+                snippetsUnsubscribe();
+            }
+
+            const loadingState = document.getElementById('loadingState');
+            const snippetsGrid = document.getElementById('snippetsGrid');
+            const emptyState = document.getElementById('emptyState');
+            
+            loadingState.style.display = 'block';
+            snippetsGrid.style.display = 'none';
+            emptyState.style.display = 'none';
+
+            try {
+                const snippetsRef = collection(db, 'snippets');
+                let q;
+
+                // Technical Prompt Requirement 5: Public Profiles
+                const urlParams = new URLSearchParams(window.location.search);
+                const profileUserId = urlParams.get('u');
+
+                if (profileUserId) {
+                    q = query(
+                        snippetsRef, 
+                        where('authorId', '==', profileUserId), 
+                        where('isPublic', '==', true)
+                    );
+                    
+                    // Fetch user info for profile view
+                    const userDoc = await getDoc(doc(db, 'users', profileUserId));
+                    if (userDoc.exists()) {
+                        const userData = userDoc.data();
+                        heroTitle.innerHTML = `<span class="gradient-text">${userData.displayName}'s</span> Snippets`;
+                        heroDesc.textContent = `Viewing shared code from ${userData.displayName}.`;
+                    }
+                } else if (currentView === 'public') {
+                    q = query(snippetsRef, where('isPublic', '==', true));
+                } else {
+                    if (!currentUser) return;
+                    q = query(snippetsRef, where('authorId', '==', currentUser.uid));
+                }
+
+                // Technical Prompt Requirement 4: Real-time Syncing
+                snippetsUnsubscribe = onSnapshot(q, (snapshot) => {
+                    allSnippets = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    
+                    // Sort by highest download count (Rankwise)
+                    allSnippets.sort((a, b) => (b.installCount || 0) - (a.installCount || 0));
+                    
+                    loadingState.style.display = 'none';
+                    
+                    if (allSnippets.length === 0) {
+                        emptyState.style.display = 'block';
+                        emptyState.querySelector('h3').textContent = profileUserId 
+                            ? 'No public snippets found' 
+                            : (currentView === 'public' ? 'No snippets found' : 'Your library is empty');
+                        emptyState.querySelector('p').textContent = profileUserId
+                            ? 'This user hasn\'t shared any snippets yet.'
+                            : (currentView === 'public' ? 'Be the first to share a snippet!' : 'Create a snippet or add one from the community.');
+                        snippetsGrid.style.display = 'none';
+                    } else {
+                        emptyState.style.display = 'none';
+                        snippetsGrid.style.display = 'grid';
+                        filterSnippets(); // Use filter to render
+                    }
+                }, (error) => {
+                    console.error('Error listening for snippets:', error);
+                    loadingState.innerHTML = `<p>Error loading snippets: ${error.message}</p>`;
+                });
+            } catch (error) {
+                console.error('Error in loadSnippets init:', error);
+            }
+        }
+
+        function renderSnippets(snippets) {
+            const snippetsGrid = document.getElementById('snippetsGrid');
+            snippetsGrid.innerHTML = '';
+            
+            if (snippets.length === 0) {
+                document.getElementById('emptyState').style.display = 'block';
+                snippetsGrid.style.display = 'none';
+                return;
+            }
+            
+            document.getElementById('emptyState').style.display = 'none';
+            snippetsGrid.style.display = 'grid';
+            
+            snippets.forEach(snippet => {
+                const card = createSnippetCard(snippet);
+                snippetsGrid.appendChild(card);
+            });
+            
+            // Update categories after rendering
+            updateCategoryTags();
+        }
+        
+        function updateCategoryTags() {
+            // Extract unique categories from all snippets
+            const categories = new Set();
+            allSnippets.forEach(snippet => {
+                if (snippet.category && snippet.category.trim()) {
+                    categories.add(snippet.category);
+                }
+            });
+            
+            // Sort categories alphabetically
+            const sortedCategories = Array.from(categories).sort();
+            
+            // Get container and preserve 'All' tag
+            const wrapper = document.getElementById('tagsWrapper');
+            const container = document.getElementById('tagsContainer');
+            const showMoreBtn = document.getElementById('showMoreBtn');
+            const allTag = wrapper.querySelector('[data-category="all"]');
+            
+            // Clear all tags except 'All'
+            wrapper.innerHTML = '';
+            wrapper.appendChild(allTag);
+            
+            // Add dynamic category tags
+            sortedCategories.forEach(category => {
+                const tag = document.createElement('span');
+                tag.className = 'tag';
+                tag.setAttribute('data-category', category);
+                tag.textContent = category;
+                
+                // Add click handler
+                tag.addEventListener('click', () => {
+                    document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
+                    tag.classList.add('active');
+                    currentCategory = category;
+                    filterSnippets();
+                });
+                
+                wrapper.appendChild(tag);
+            });
+            
+            // Re-attach handler to 'All' tag
+            allTag.addEventListener('click', () => {
+                document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
+                allTag.classList.add('active');
+                currentCategory = 'all';
+                filterSnippets();
+            });
+            
+            // Show/hide "Show More" button based on overflow
+            const wrapperHeight = wrapper.scrollHeight;
+            const visibleHeight = 120; // max-height from CSS
+            
+            if (wrapperHeight > visibleHeight && sortedCategories.length > 10) {
+                showMoreBtn.classList.add('visible');
+            } else {
+                showMoreBtn.classList.remove('visible');
+                wrapper.classList.remove('expanded');
+            }
+        }
+        
+        // Show More/Less button handler
+        document.getElementById('showMoreBtn').addEventListener('click', () => {
+            const wrapper = document.getElementById('tagsWrapper');
+            const btn = document.getElementById('showMoreBtn');
+            
+            if (wrapper.classList.contains('expanded')) {
+                wrapper.classList.remove('expanded');
+                btn.textContent = 'Show More Categories';
+            } else {
+                wrapper.classList.add('expanded');
+                btn.textContent = 'Show Less';
+            }
+        });
+        
+        function createSnippetCard(snippet) {
+            const card = document.createElement('div');
+            card.className = 'snippet-card';
+            
+            const avatarColors = ['#ef4444', '#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ec4899'];
+            const randomColor = avatarColors[Math.floor(Math.random() * avatarColors.length)];
+            
+            const isOwner = currentUser && snippet.authorId === currentUser.uid;
+            const isDeveloper = currentUser && currentUser.email === 'pranavgawas1999@gmail.com';
+            
+            let actionButtons = '';
+            
+            if (isOwner) {
+                // Owner Actions: Copy Text, Edit, Delete
+                actionButtons = `
+                    <button class="action-btn copy-btn" title="Copy Text" onclick="window.copySnippetText('${snippet.id}', this)">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    </button>
+                    <button class="action-btn edit-btn" title="Edit Snippet" onclick="window.editSnippet('${snippet.id}')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    </button>
+                    <button class="action-btn delete-btn" title="Delete Snippet" onclick="window.deleteSnippet('${snippet.id}')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                    </button>
+                `;
+            } else {
+                // Public Actions: Copy Text, Add to Library
+                // PLUS Developer Moderation: Delete (if developer)
+                let deleteButton = '';
+                if (isDeveloper) {
+                    deleteButton = `
+                        <button class="action-btn delete-btn" title="[ADMIN] Delete Snippet" onclick="window.deleteSnippet('${snippet.id}')" style="color: red; border-color: red;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        </button>
+                    `;
+                }
+
+                actionButtons = `
+                    <button class="action-btn copy-btn" title="Copy Text" onclick="window.copySnippetText('${snippet.id}', this)">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    </button>
+                    <button class="action-btn" title="Add to My Snippets" onclick="window.addToLibrary('${snippet.id}')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                    </button>
+                    ${deleteButton}
+                `;
+            }
+
+            // Privacy Badge Logic - Modern SVG Icons
+            const privacyIcon = snippet.isPublic 
+                ? '<svg class="privacy-icon public" title="Public" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>' 
+                : '<svg class="privacy-icon private" title="Private" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>';
+
+            // Verified Badge Logic - Modern Badge Icon
+            const isVerified = snippet.authorIsVerified || (snippet.authorEmail === 'pranavgawas1999@gmail.com');
+            const verifiedIcon = isVerified 
+                ? `<svg class="verified-badge" viewBox="0 0 24 24" fill="currentColor"><path d="M23 12l-2.44-2.79.34-3.69-3.61-.82-1.89-3.2L12 2.96 8.6 1.5 6.71 4.69 3.1 5.5l.34 3.7L1 12l2.44 2.79-.34 3.7 3.61.82L8.6 22.5l3.4-1.47 3.4 1.46 1.89-3.19 3.61-.82-.34-3.69L23 12zm-12.91 4.72l-3.8-3.81 1.48-1.48 2.32 2.33 5.85-5.87 1.48 1.48-7.33 7.35z"/></svg>`
+                : '';
+
+            card.innerHTML = `
+                <div class="snippet-header">
+                    <span class="snippet-type">${snippet.category || 'General'}</span>
+                    ${privacyIcon}
+                </div>
+                <div class="snippet-header" style="margin-top: 4px;">
+                    <span class="snippet-shortcut">${snippet.shortcut || '/snippet'}</span>
+                </div>
+                <h3 class="snippet-title" style="margin-top: 8px;">${snippet.title || 'Untitled Snippet'}</h3>
+                <p class="snippet-desc">${snippet.description || snippet.content?.substring(0, 100) || 'No description'}</p>
+                <div class="snippet-footer">
+                    <div class="author">
+                        <div class="author-avatar" style="background: ${randomColor};"></div>
+                        <a href="profile.html?u=${snippet.authorId}" class="author-name-link" title="View Profile">
+                            <span class="author-name">
+                                ${snippet.authorName || 'Anonymous'}
+                                ${verifiedIcon}
+                            </span>
+                        </a>
+                    </div>
+                    <div class="card-actions">
+                        ${actionButtons}
+                    </div>
+                </div>
+                <div class="install-count-row" style="margin-top: 12px; font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 4px;">
+                    <span>Downloads: ${snippet.installCount || 0}</span>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // --- LIMIT CHECK ---
+        async function getUserData() {
+            if (!currentUser) return null;
+            try {
+                const userDocRef = doc(db, 'users', currentUser.uid);
+                let userDoc = await getDoc(userDocRef);
+                
+                // Fail-safe initialization for legacy users or missed signups
+                if (!userDoc.exists() || userDoc.data().snippetCount === undefined) {
+                    await setDoc(userDocRef, {
+                        displayName: userDoc.exists() ? (userDoc.data().displayName || currentUser.displayName || currentUser.email.split('@')[0]) : (currentUser.displayName || currentUser.email.split('@')[0]),
+                        email: currentUser.email,
+                        snippetCount: userDoc.exists() ? (userDoc.data().snippetCount || 0) : 0,
+                        isPro: userDoc.exists() ? (userDoc.data().isPro || false) : false,
+                        createdAt: userDoc.exists() ? (userDoc.data().createdAt || serverTimestamp()) : serverTimestamp()
+                    }, { merge: true });
+                    // Re-fetch to have the latest data
+                    userDoc = await getDoc(userDocRef);
+                }
+                
+                return userDoc.data();
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+                return null;
+            }
+        }
+
+        async function checkProStatus() {
+            const userData = await getUserData();
+            if (!userData) return false;
+            
+            // Check for explicit isPro flag or paymentData
+            if (userData.isPro === true) return true;
+            
+            const payment = userData.paymentData;
+            if (payment && payment.status === 'active') {
+                if (payment.type === 'dodo' || payment.type === 'lemon') {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        async function canAddSnippet() {
+            console.log('Checking if user can add snippet...');
+            if (!currentUser) {
+                console.log('User not logged in.');
+                return false;
+            }
+            
+            const userData = await getUserData();
+            if (!userData) return true; 
+            
+            // --- DAILY LIMIT CHECK (ALL USERS) ---
+            const today = new Date().toDateString();
+            const lastDate = userData.lastSnippetDate;
+            let dailyCount = 0;
+            
+            if (lastDate === today) {
+                dailyCount = userData.dailySnippetCount || 0;
+            }
+            
+            if (dailyCount >= 20) {
+                showToast('Daily Limit Reached', 'To prevent spam, you can only create 20 public snippets per day. Please try again tomorrow.', 'warning', 5000);
+                return false;
+            }
+
+            // --- PRO / FREE CHECKS ---
+            const isPro = await checkProStatus();
+            console.log('Pro status:', isPro);
+            if (isPro) return true;
+            
+            // Free user check limit using the denormalized counter
+            const count = userData.snippetCount || 0;
+            console.log('Current snippet count:', count);
+            
+            if (count >= 5) {
+                showToast('Free Limit Reached', 'You have reached the limit for free cloud storage (5/5). Upgrade to Pro for unlimited snippets!', 'warning', 5000);
+                return false;
+            }
+            return true;
+        }
+
+        // --- ACTIONS ---
+        window.copySnippetText = async (id, btn) => {
+            const snippet = allSnippets.find(s => s.id == id);
+            if (!snippet) return;
+            
+            try {
+                await navigator.clipboard.writeText(snippet.content);
+                const originalContent = btn.innerHTML;
+                btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+                btn.classList.add('success');
+                setTimeout(() => {
+                    btn.innerHTML = originalContent;
+                    btn.classList.remove('success');
+                }, 2000);
+                
+                // Track usage
+                const snippetRef = doc(db, 'snippets', id);
+                await updateDoc(snippetRef, { installCount: increment(1) });
+            } catch (err) {
+                console.error('Failed to copy:', err);
+            }
+        };
+
+        window.addToLibrary = async (id) => {
+            console.log('addToLibrary called with id:', id);
+            if (!currentUser) {
+                console.log('User not logged in, redirecting to login.');
+                showToast('Login Required', 'Please log in to add snippets to your library', 'warning');
+                setTimeout(() => window.location.href = 'login.html', 1500);
+                return;
+            }
+            
+            const snippet = allSnippets.find(s => s.id == id);
+            if (!snippet) {
+                console.error('Snippet not found in local state with id:', id);
+                console.log('Available IDs:', allSnippets.map(s => s.id));
+                return;
+            }
+            
+            console.log('Snippet found:', snippet);
+            
+            const confirmed = await customConfirm(
+                `Add "${snippet.title}" to your library? You will be able to edit your private copy.`,
+                'Add to Library'
+            );
+            if (!confirmed) {
+                console.log('User cancelled addition.');
+                return;
+            }
+            
+            // Check limits before adding
+            console.log('Checking limits...');
+            if (!(await canAddSnippet())) {
+                console.log('Limit check failed.');
+                return;
+            }
+
+            try {
+                // Get user verification status
+                const userData = await getUserData();
+                const isUserVerified = userData?.isVerified || (currentUser.email === 'pranavgawas1999@gmail.com');
+                
+                const newSnippet = {
+                    title: snippet.title,
+                    shortcut: snippet.shortcut,
+                    category: snippet.category,
+                    content: snippet.content,
+                    description: snippet.description || '',
+                    isPublic: false, // Default to private
+                    authorId: currentUser.uid,
+                    authorName: currentUser.displayName || currentUser.email.split('@')[0],
+                    authorEmail: currentUser.email,
+                    authorIsVerified: isUserVerified,
+                    createdAt: serverTimestamp(),
+                    updatedAt: serverTimestamp(),
+                    installCount: 0
+                };
+                
+                await addDoc(collection(db, 'snippets'), newSnippet);
+                
+                // Increment source snippet install count
+                const sourceSnippetRef = doc(db, 'snippets', id);
+                await updateDoc(sourceSnippetRef, { installCount: increment(1) });
+                
+                // Increment personal counter
+                const userDocRef = doc(db, 'users', currentUser.uid);
+                await updateDoc(userDocRef, { snippetCount: increment(1) });
+                
+                const viewNow = await customConfirm(
+                    'Snippet added to your library! Do you want to view it now?',
+                    'Success'
+                );
+                if (viewNow) {
+                    switchView('personal');
+                } else {
+                    showToast('Success', 'Snippet added to your library', 'success');
+                }
+            } catch (error) {
+                console.error('Error adding to library:', error);
+                showToast('Error', 'Failed to add snippet to library', 'error');
+            }
+        };
+
+        window.deleteSnippet = async (id) => {
+            const confirmed = await customConfirm(
+                'Are you sure you want to delete this snippet? This action cannot be undone.',
+                'Delete Snippet',
+                true
+            );
+            if (!confirmed) return;
+            
+            try {
+                await deleteDoc(doc(db, 'snippets', String(id)));
+                
+                // Decrement personal counter
+                if (currentUser) {
+                    const userDocRef = doc(db, 'users', currentUser.uid);
+                    await updateDoc(userDocRef, { snippetCount: increment(-1) });
+                }
+                
+                allSnippets = allSnippets.filter(s => s.id != id);
+                renderSnippets(allSnippets);
+                showToast('Deleted', 'Snippet deleted successfully', 'success');
+            } catch (error) {
+                console.error('Error deleting snippet:', error);
+                showToast('Error', 'Failed to delete snippet', 'error');
+            }
+        };
+
         let isEditing = false;
         let editingSnippetId = null;
 
-        // Dialog Management
+        window.editSnippet = (id) => {
+            const snippet = allSnippets.find(s => s.id == id);
+            if (!snippet) return;
+            openDialog(snippet);
+        };
+        
+        // --- DIALOG & FORM ---
         startContributingBtn.addEventListener('click', () => {
             if (!currentUser) {
-                alert('Please log in to contribute snippets');
-                window.location.href = 'login.html';
+                showToast('Login Required', 'Please log in to contribute snippets', 'warning');
+                setTimeout(() => window.location.href = 'login.html', 1500);
                 return;
             }
             openDialog();
@@ -917,14 +1932,11 @@
             if (snippet) {
                 isEditing = true;
                 editingSnippetId = snippet.id;
-                
-                // Pre-fill form
                 document.getElementById('snippetTitle').value = snippet.title;
                 document.getElementById('snippetShortcut').value = snippet.shortcut;
                 document.getElementById('snippetContent').value = snippet.content;
                 document.getElementById('snippetDescription').value = snippet.description;
                 
-                // Handle category
                 const predefinedCategories = ['Engineering', 'Sales', 'Support', 'Personal', 'Recruiting', 'Work'];
                 if (predefinedCategories.includes(snippet.category)) {
                     categorySelect.value = snippet.category;
@@ -935,7 +1947,6 @@
                     customCategoryInput.classList.add('active');
                 }
                 
-                // Handle visibility
                 isPublic = snippet.isPublic;
                 if (isPublic) {
                     visibilityToggle.classList.add('active');
@@ -955,15 +1966,19 @@
                 customCategoryInput.value = '';
                 customCategoryInput.classList.remove('active');
                 
-                // Reset visibility to default public
-                isPublic = true;
-                visibilityToggle.classList.add('active');
-                visibilityLabel.textContent = 'Public';
+                // Default visibility based on current view
+                isPublic = currentView === 'public';
+                if (isPublic) {
+                    visibilityToggle.classList.add('active');
+                    visibilityLabel.textContent = 'Public';
+                } else {
+                    visibilityToggle.classList.remove('active');
+                    visibilityLabel.textContent = 'Private';
+                }
                 
-                document.querySelector('.dialog-header h2').textContent = 'Save as Snippet';
+                document.querySelector('.dialog-header h2').textContent = 'New Snippet';
                 document.getElementById('saveBtn').textContent = 'Save';
             }
-            
             submissionDialog.classList.add('active');
         }
         
@@ -976,77 +1991,39 @@
 
         closeDialogBtn.addEventListener('click', closeDialog);
         cancelBtn.addEventListener('click', closeDialog);
-        
-        // Close dialog when clicking outside
         submissionDialog.addEventListener('click', (e) => {
-            if (e.target === submissionDialog) {
-                closeDialog();
+            if (e.target === submissionDialog) closeDialog();
+        });
+        
+        // Toggle Visibility Switch
+        visibilityToggle.addEventListener('click', () => {
+            isPublic = !isPublic;
+            if (isPublic) {
+                visibilityToggle.classList.add('active');
+                visibilityLabel.textContent = 'Public';
+            } else {
+                visibilityToggle.classList.remove('active');
+                visibilityLabel.textContent = 'Private';
             }
         });
 
-        // Action Handlers
-        window.copySnippet = async (id, btn) => {
-            const snippet = allSnippets.find(s => s.id === id);
-            if (!snippet) return;
-            
-            try {
-                await navigator.clipboard.writeText(snippet.content);
-                
-                // Update button feedback
-                const originalContent = btn.innerHTML;
-                btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
-                btn.classList.add('success');
-                
-                setTimeout(() => {
-                    btn.innerHTML = originalContent;
-                    btn.classList.remove('success');
-                }, 2000);
-                
-                // Increment install count
-                const snippetRef = doc(db, 'snippets', id);
-                await updateDoc(snippetRef, {
-                    installCount: increment(1)
-                });
-                
-            } catch (err) {
-                console.error('Failed to copy:', err);
-            }
-        };
+        // Category Select Change
+        categorySelect.addEventListener('change', () => {
+             if (categorySelect.value === 'custom') {
+                 customCategoryInput.classList.add('active');
+                 customCategoryInput.focus();
+             } else {
+                 customCategoryInput.classList.remove('active');
+             }
+        });
 
-        window.deleteSnippet = async (id) => {
-            if (!confirm('Are you sure you want to delete this snippet? This action cannot be undone.')) return;
-            
-            try {
-                await deleteDoc(doc(db, 'snippets', id));
-                
-                // Remove from UI immediately
-                allSnippets = allSnippets.filter(s => s.id !== id);
-                renderSnippets(allSnippets);
-                
-            } catch (error) {
-                console.error('Error deleting snippet:', error);
-                alert('Failed to delete snippet. Please try again.');
-            }
-        };
-
-        window.editSnippet = (id) => {
-            const snippet = allSnippets.find(s => s.id === id);
-            if (!snippet) return;
-            openDialog(snippet);
-        };
-        
-        // Form Submission
         snippetForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            if (!currentUser) {
-                alert('Please log in to submit snippets');
-                return;
-            }
+            if (!currentUser) return;
             
             const saveBtn = document.getElementById('saveBtn');
             saveBtn.disabled = true;
-            saveBtn.textContent = isEditing ? 'Updating...' : 'Saving...';
+            saveBtn.textContent = 'Saving...';
             
             try {
                 const title = document.getElementById('snippetTitle').value.trim();
@@ -1055,190 +2032,77 @@
                 const content = document.getElementById('snippetContent').value.trim();
                 let description = document.getElementById('snippetDescription').value.trim();
                 
-                // Use custom category if selected
-                if (category === 'custom') {
-                    category = customCategoryInput.value.trim();
-                }
+                if (category === 'custom') category = customCategoryInput.value.trim();
+                if (!description) description = content.substring(0, 100) + (content.length > 100 ? '...' : '');
                 
-                // Auto-generate description if empty
-                if (!description) {
-                    description = content.substring(0, 100) + (content.length > 100 ? '...' : '');
-                }
-                
+                // Get advanced user data for verification status
+                const userData = await getUserData();
+                const isUserVerified = userData?.isVerified || (currentUser.email === 'pranavgawas1999@gmail.com');
+
                 const snippetData = {
-                    title,
-                    shortcut,
-                    category,
-                    content,
-                    description,
-                    isPublic,
+                    title, shortcut, category, content, description, isPublic,
                     authorId: currentUser.uid,
                     authorName: currentUser.displayName || currentUser.email.split('@')[0],
                     authorEmail: currentUser.email,
+                    authorIsVerified: isUserVerified, // Persist verification status
                     updatedAt: serverTimestamp()
                 };
                 
                 if (!isEditing) {
+                    // Check limit before creating new
+                    if (!(await canAddSnippet())) {
+                         saveBtn.disabled = false;
+                         return;
+                    }
+
                     snippetData.createdAt = serverTimestamp();
                     snippetData.installCount = 0;
-                    
-                    // Create new
                     await addDoc(collection(db, 'snippets'), snippetData);
+                    
+                    // Update daily usage stats
+                    const userDocRef = doc(db, 'users', currentUser.uid);
+                    const today = new Date().toDateString();
+                    const userData = await getUserData();
+                    
+                    let newDailyCount = 1;
+                    if (userData && userData.lastSnippetDate === today) {
+                        newDailyCount = (userData.dailySnippetCount || 0) + 1;
+                    }
+
+                    await updateDoc(userDocRef, { 
+                        snippetCount: increment(1),
+                        dailySnippetCount: newDailyCount,
+                        lastSnippetDate: today
+                    });
                 } else {
-                    // Update existing
                     await updateDoc(doc(db, 'snippets', editingSnippetId), snippetData);
                 }
                 
-                // Show success message
-                alert(isEditing ? 'Snippet updated successfully!' : (isPublic ? 'Snippet published successfully!' : 'Snippet saved privately!'));
-                
-                // Close dialog and reload snippets if public
                 closeDialog();
-                if (isPublic) {
-                    await loadSnippets();
-                }
+                loadSnippets(); // Reload to show changes
                 
             } catch (error) {
-                console.error('Error saving snippet:', error);
-                alert(`Failed to save snippet: ${error.message}\n\nPlease check the console for more details.`);
+                console.error('Error saving:', error);
+                showToast('Error', 'Failed to save snippet', 'error');
             } finally {
                 saveBtn.disabled = false;
-                saveBtn.textContent = isEditing ? 'Update' : 'Save';
             }
         });
         
-        // Load snippets from Firestore
-        async function loadSnippets() {
-            const loadingState = document.getElementById('loadingState');
-            const snippetsGrid = document.getElementById('snippetsGrid');
-            const emptyState = document.getElementById('emptyState');
-            
-            try {
-                loadingState.style.display = 'block';
-                snippetsGrid.style.display = 'none';
-                emptyState.style.display = 'none';
-                
-                const snippetsRef = collection(db, 'snippets');
-                const q = query(
-                    snippetsRef, 
-                    where('isPublic', '==', true)
-                    // orderBy('createdAt', 'desc') // Temporarily disabled until Firestore index is created
-                );
-                
-                const querySnapshot = await getDocs(q);
-                allSnippets = [];
-                
-                querySnapshot.forEach((doc) => {
-                    allSnippets.push({ id: doc.id, ...doc.data() });
-                });
-                
-                loadingState.style.display = 'none';
-                
-                if (allSnippets.length === 0) {
-                    emptyState.style.display = 'block';
-                } else {
-                    snippetsGrid.style.display = 'grid';
-                    renderSnippets(allSnippets);
-                }
-            } catch (error) {
-                console.error('Error loading snippets:', error);
-                loadingState.innerHTML = '<p>Error loading snippets. Please try again later.</p>';
-            }
-        }
+        // --- FILTERING ---
+        // Tag handlers are now attached dynamically in updateCategoryTags()
         
-        function renderSnippets(snippets) {
-            const snippetsGrid = document.getElementById('snippetsGrid');
-            snippetsGrid.innerHTML = '';
-            
-            if (snippets.length === 0) {
-                document.getElementById('emptyState').style.display = 'block';
-                snippetsGrid.style.display = 'none';
-                return;
-            }
-            
-            document.getElementById('emptyState').style.display = 'none';
-            snippetsGrid.style.display = 'grid';
-            
-            snippets.forEach(snippet => {
-                const card = createSnippetCard(snippet);
-                snippetsGrid.appendChild(card);
-            });
-        }
         
-        function createSnippetCard(snippet) {
-            const card = document.createElement('div');
-            card.className = 'snippet-card';
-            
-            const avatarColors = ['#ef4444', '#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ec4899'];
-            const randomColor = avatarColors[Math.floor(Math.random() * avatarColors.length)];
-            
-            const isOwner = currentUser && snippet.authorId === currentUser.uid;
-            
-            card.innerHTML = `
-                <div class="snippet-header">
-                    <span class="snippet-type">${snippet.category || 'General'}</span>
-                    <span class="snippet-shortcut">${snippet.shortcut || '/snippet'}</span>
-                </div>
-                <h3 class="snippet-title">${snippet.title || 'Untitled Snippet'}</h3>
-                <p class="snippet-desc">${snippet.description || snippet.content?.substring(0, 100) || 'No description'}</p>
-                <div class="snippet-footer">
-                    <div class="author">
-                        <div class="author-avatar" style="background: ${randomColor};"></div>
-                        <span class="author-name">${snippet.authorName || 'Anonymous'}</span>
-                    </div>
-                <div class="card-actions">
-                        <button class="action-btn copy-btn" title="Copy Content" onclick="window.copySnippet('${snippet.id}', this)">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                        </button>
-                        ${isOwner ? `
-                            <button class="action-btn edit-btn" title="Edit Snippet" onclick="window.editSnippet('${snippet.id}')">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                            </button>
-                            <button class="action-btn delete-btn" title="Delete Snippet" onclick="window.deleteSnippet('${snippet.id}')">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
-                            </button>
-                        ` : ''}
-                    </div>
-                </div>
-                <div class="install-count-row" style="margin-top: 12px; font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 4px;">
-                    <span>Downloads: ${snippet.installCount || 0}</span>
-                </div>
-            `;
-            
-            // Store snippet data for easy access
-            card.dataset.snippet = JSON.stringify(snippet);
-            
-            return card;
-        }
-        
-        // Category filtering
-        document.querySelectorAll('.tag').forEach(tag => {
-            tag.addEventListener('click', () => {
-                document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
-                tag.classList.add('active');
-                
-                const category = tag.dataset.category;
-                currentCategory = category;
-                filterSnippets();
-            });
-        });
-        
-        // Search functionality
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            filterSnippets();
-        });
+        document.getElementById('searchInput').addEventListener('input', filterSnippets);
         
         function filterSnippets() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            
             let filtered = allSnippets;
             
-            // Filter by category
             if (currentCategory !== 'all') {
                 filtered = filtered.filter(s => s.category === currentCategory);
             }
             
-            // Filter by search term
             if (searchTerm) {
                 filtered = filtered.filter(s => 
                     (s.title?.toLowerCase().includes(searchTerm)) ||
@@ -1247,6 +2111,15 @@
                     (s.category?.toLowerCase().includes(searchTerm))
                 );
             }
+            
+            // Sort: Verified users first
+            filtered.sort((a, b) => {
+                const aVerified = a.authorIsVerified || (a.authorEmail === 'pranavgawas1999@gmail.com');
+                const bVerified = b.authorIsVerified || (b.authorEmail === 'pranavgawas1999@gmail.com');
+                if (aVerified && !bVerified) return -1;
+                if (!aVerified && bVerified) return 1;
+                return 0;
+            });
             
             renderSnippets(filtered);
         }

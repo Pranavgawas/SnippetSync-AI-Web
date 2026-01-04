@@ -1,0 +1,77 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // --- HELPER FUNCTIONS ---
+    function isAuthenticated() { return request.auth != null; }
+    function isOwner(userId) { return request.auth.uid == userId; }
+    
+    // Your Developer Email
+    function isDeveloper() {
+       return request.auth.token.email in ['pranavgawas1999@gmail.com']; 
+    }
+
+    // Pro Logic: Developer OR has isPro flag
+    function isProUser() {
+      let userDoc = get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+      return isDeveloper() || (userDoc.isPro == true);
+    }
+
+    // --- SNIPPETS (The Sync Center) ---
+    match /snippets/{snippetId} {
+      
+      // READ: Owners see all their own; others see only Public.
+      allow read: if isAuthenticated() && (
+        resource.data.isPublic == true || 
+        resource.data.authorId == request.auth.uid
+      );
+
+      // CREATE: 
+      // 1. Must be Authenticated & Owner
+      // 2. Limit Check: Pro = Unlimited; Free = Max 5 Snippets
+      allow create: if isAuthenticated() && 
+        request.resource.data.authorId == request.auth.uid &&
+        (
+          isProUser() || 
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.snippetCount < 5
+        );
+
+      // UPDATE: 
+      // - Owner can edit any field
+      // - Any authenticated user can increment installCount on PUBLIC snippets (for download tracking)
+      allow update: if isAuthenticated() && (
+        resource.data.authorId == request.auth.uid ||
+        (
+          resource.data.isPublic == true &&
+          request.resource.data.keys().hasOnly(['installCount', 'authorId', 'title', 'shortcut', 'category', 'content', 'description', 'isPublic', 'authorName', 'authorEmail', 'authorIsVerified', 'createdAt', 'updatedAt']) &&
+          request.resource.data.installCount == resource.data.installCount + 1 &&
+          request.resource.data.authorId == resource.data.authorId &&
+          request.resource.data.title == resource.data.title &&
+          request.resource.data.shortcut == resource.data.shortcut &&
+          request.resource.data.category == resource.data.category &&
+          request.resource.data.content == resource.data.content &&
+          request.resource.data.description == resource.data.description &&
+          request.resource.data.isPublic == resource.data.isPublic &&
+          request.resource.data.authorName == resource.data.authorName &&
+          request.resource.data.authorEmail == resource.data.authorEmail &&
+          request.resource.data.authorIsVerified == resource.data.authorIsVerified
+        )
+      );
+
+      // DELETE: Owner can delete any of theirs; Developer can only delete PUBLIC snippets.
+      allow delete: if isAuthenticated() && (
+        resource.data.authorId == request.auth.uid || 
+        (isDeveloper() && resource.data.isPublic == true)
+      );
+    }
+
+    // --- USER PROFILES ---
+    match /users/{userId} {
+      // Allows users to view each other's profiles for sharing links & verification status
+      allow read: if isAuthenticated();
+      
+      // Only the owner can update their profile, or Developer (for verification)
+      allow write: if isOwner(userId) || isDeveloper();
+    }
+  }
+}

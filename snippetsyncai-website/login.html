@@ -188,7 +188,7 @@
     
     <script src="env.js"></script>
     <script type="module">
-        import { auth, signInWithEmailAndPassword, signInWithPopup, googleProvider } from './firebase-config.js';
+        import { auth, signInWithEmailAndPassword, signInWithPopup, googleProvider, db, doc, getDoc, setDoc, serverTimestamp } from './firebase-config.js';
         
         const loginForm = document.getElementById('loginForm');
         const googleSignInBtn = document.getElementById('googleSignIn');
@@ -202,7 +202,46 @@
         function hideError() {
             errorMessage.style.display = 'none';
         }
+
+        async function initUserDocument(user) {
+            try {
+                // Check if doc exists first (more efficient for login)
+                // But setDoc with merge: true is also safe.
+                await setDoc(doc(db, 'users', user.uid), {
+                    displayName: user.displayName || user.email.split('@')[0],
+                    email: user.email,
+                    // Only initialize these if they don't exist
+                    // snippetCount: 0, 
+                    // isPro: false
+                }, { merge: true });
+                
+                // Note: We don't force snippetCount: 0 here because it might overwrite existing data if merge: true isn't handled perfectly by our mental model.
+                // Actually, merge: true only merges FIELDS. If we specify snippetCount: 0, it WILL overwrite if we don't check existence.
+                // Let's check existence for safer login initialization.
+                const userDoc = await getDoc(doc(db, 'users', user.uid));
+                if (!userDoc.exists() || userDoc.data().snippetCount === undefined) {
+                    await setDoc(doc(db, 'users', user.uid), {
+                        snippetCount: userDoc.exists() ? (userDoc.data().snippetCount || 0) : 0,
+                        isPro: userDoc.exists() ? (userDoc.data().isPro || false) : false,
+                        createdAt: userDoc.exists() ? (userDoc.data().createdAt || serverTimestamp()) : serverTimestamp()
+                    }, { merge: true });
+                }
+            } catch (err) {
+                console.error('Error initializing user document:', err);
+            }
+        }
         
+        // Helper to handle redirect
+        function handleLoginSuccess() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const redirectUrl = urlParams.get('redirect');
+            if (redirectUrl) {
+                window.location.href = decodeURIComponent(redirectUrl);
+            } else {
+                window.location.href = 'community.html';
+            }
+        }
+
         // Email/Password Login
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -213,7 +252,7 @@
             
             try {
                 await signInWithEmailAndPassword(auth, email, password);
-                window.location.href = 'community.html';
+                handleLoginSuccess();
             } catch (error) {
                 console.error('Login error:', error);
                 showError(error.message || 'Failed to login. Please check your credentials.');
@@ -224,8 +263,9 @@
         googleSignInBtn.addEventListener('click', async () => {
             hideError();
             try {
-                await signInWithPopup(auth, googleProvider);
-                window.location.href = 'community.html';
+                const result = await signInWithPopup(auth, googleProvider);
+                await initUserDocument(result.user);
+                handleLoginSuccess();
             } catch (error) {
                 console.error('Google sign-in error:', error);
                 showError(error.message || 'Failed to sign in with Google.');

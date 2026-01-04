@@ -121,4 +121,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // --- PAYMENT TOGGLE ---
+    const platformBtns = document.querySelectorAll('.platform-btn');
+    if (platformBtns.length > 0) {
+        platformBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                platformBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+    }
+
 });
