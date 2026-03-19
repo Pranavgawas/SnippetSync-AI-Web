@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Community Snippets - SnippetSyncAi</title>
+    <link rel="icon" type="image/png" href="logo.png">
     <meta name="description" content="Browse thousands of free text expander snippets shared by the community. Email templates, code snippets, and more.">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://snippetsync-ai-web-22477-cf36a.web.app/community.html">
     <script src="env.js"></script>
-    <script type="module" src="auth-guard.js"></script>
+    <!-- Auth guard removed - community page allows unlogged users to browse public snippets -->
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -1104,11 +1105,14 @@
             </button>
             <div class="nav-links">
                 <a href="index.html" style="color: var(--text-muted);">← Back to Home</a>
+                <a href="https://chromewebstore.google.com/detail/snippetsync-ai/gbdbinckkcpfhdlboopmlahpbcegfple" class="nav-cta" style="padding: 8px 16px; background: var(--primary); color: white; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 500;">Add to Chrome - Free</a>
                 <!-- USER INFO (shown when logged in) -->
                 <div id="userInfo" class="user-info" style="display: none;">
                     <button id="logoutBtn" class="logout-btn">Logout</button>
                     <div class="user-avatar" id="userAvatar" style="cursor: pointer;" title="View My Profile"></div>
                 </div>
+                <!-- LOGIN BUTTON (shown when logged out) -->
+                <a href="login.html" id="headerLoginBtn" style="padding: 8px 16px; background: var(--primary); color: white; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 500; display: none;">Login</a>
             </div>
         </div>
     </nav>
@@ -1323,18 +1327,35 @@
         const heroDesc = document.getElementById('heroDesc');
         
         // --- AUTH & INIT ---
+        let authInitialized = false;
+        
         onAuthStateChanged(auth, (user) => {
+            authInitialized = true; // Mark auth as initialized
+            const headerLoginBtn = document.getElementById('headerLoginBtn');
+            const userInfo = document.getElementById('userInfo');
+            
             if (user) {
                 currentUser = user;
                 showUserInfo(user);
+                
+                // UI State for Logged In
+                headerLoginBtn.style.display = 'none';
+                viewPersonalBtn.style.display = 'inline-flex';
+                
                 loadSnippets();
             } else {
                 currentUser = null;
+                
+                // UI State for Logged Out
+                userInfo.style.display = 'none';
+                headerLoginBtn.style.display = 'block';
+                viewPersonalBtn.style.display = 'none';
+
                 // If on personal view and logged out, switch to public
                 if (currentView === 'personal') {
                     switchView('public');
                 } else {
-                    loadSnippets();
+                    loadSnippets(); // Safe to load public snippets now
                 }
             }
         });
@@ -1474,13 +1495,27 @@
                 } else if (currentView === 'public') {
                     q = query(snippetsRef, where('isPublic', '==', true));
                 } else {
-                    if (!currentUser) return;
+                    // Personal view requires authentication
+                    if (!currentUser) {
+                        loadingState.style.display = 'none';
+                        emptyState.style.display = 'block';
+                        emptyState.querySelector('h3').textContent = 'Sign in required';
+                        emptyState.querySelector('p').textContent = 'Please sign in to view your personal snippets.';
+                        return; // Exit early - no query to execute
+                    }
                     q = query(snippetsRef, where('authorId', '==', currentUser.uid));
+                }
+
+                // Only subscribe if we have a valid query
+                if (!q) {
+                    console.warn('No query defined, skipping snapshot listener');
+                    return;
                 }
 
                 // Technical Prompt Requirement 4: Real-time Syncing
                 snippetsUnsubscribe = onSnapshot(q, (snapshot) => {
-                    allSnippets = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    // Ensure the Firestore Document ID is used as the 'id' for database operations
+                    allSnippets = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
                     
                     // Sort by highest download count (Rankwise)
                     allSnippets.sort((a, b) => (b.installCount || 0) - (a.installCount || 0));
@@ -1647,9 +1682,15 @@
                     <button class="action-btn copy-btn" title="Copy Text" onclick="window.copySnippetText('${snippet.id}', this)">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                     </button>
-                    <button class="action-btn" title="Add to My Snippets" onclick="window.addToLibrary('${snippet.id}')">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-                    </button>
+                    ${currentUser ? `
+                        <button class="action-btn" title="Add to My Snippets" onclick="window.addToLibrary('${snippet.id}')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                        </button>
+                    ` : `
+                        <button class="action-btn" title="Sign in to add this snippet" onclick="window.location.href='login.html'" style="background: var(--primary); color: white;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M13.8 12H3"/></svg>
+                        </button>
+                    `}
                     ${deleteButton}
                 `;
             }
@@ -1812,9 +1853,11 @@
                 return;
             }
             
+            // Use loose equality to match string IDs with potential number IDs from legacy data
             const snippet = allSnippets.find(s => s.id == id);
+            
             if (!snippet) {
-                console.error('Snippet not found in local state with id:', id);
+                console.error('Snippet not found for ID:', id);
                 console.log('Available IDs:', allSnippets.map(s => s.id));
                 return;
             }
@@ -1842,7 +1885,12 @@
                 const userData = await getUserData();
                 const isUserVerified = userData?.isVerified || (currentUser.email === 'pranavgawas1999@gmail.com');
                 
+                // Generate ID client-side to ensure it exists in the data
+                // This matches the format used by the extension for consistency
+                const newDocRef = doc(collection(db, 'snippets'));
+                
                 const newSnippet = {
+                    id: newDocRef.id, // CRITICAL: Save ID in the document body for extension sync compatibility
                     title: snippet.title,
                     shortcut: snippet.shortcut,
                     category: snippet.category,
@@ -1858,15 +1906,31 @@
                     installCount: 0
                 };
                 
-                await addDoc(collection(db, 'snippets'), newSnippet);
+                // Use setDoc with the generated ID
+                console.log('[AddToLibrary] Creating new snippet...');
+                await setDoc(newDocRef, newSnippet);
+                console.log('[AddToLibrary] Snippet created successfully.');
                 
-                // Increment source snippet install count
-                const sourceSnippetRef = doc(db, 'snippets', id);
-                await updateDoc(sourceSnippetRef, { installCount: increment(1) });
+                // Increment source snippet install count (Best effort - ignore failure)
+                try {
+                    console.log('[AddToLibrary] Updating install stats...');
+                    const sourceSnippetRef = doc(db, 'snippets', String(id));
+                    await updateDoc(sourceSnippetRef, { installCount: increment(1) });
+                    console.log('[AddToLibrary] Install stats updated.');
+                } catch (statsErr) {
+                    console.warn('[AddToLibrary] Failed to update install stats (ignoring):', statsErr);
+                }
                 
                 // Increment personal counter
-                const userDocRef = doc(db, 'users', currentUser.uid);
-                await updateDoc(userDocRef, { snippetCount: increment(1) });
+                try {
+                    console.log('[AddToLibrary] Updating user snippet count...');
+                    const userDocRef = doc(db, 'users', currentUser.uid);
+                    await updateDoc(userDocRef, { snippetCount: increment(1) });
+                    console.log('[AddToLibrary] User count updated.');
+                } catch (userErr) {
+                    console.error('[AddToLibrary] Failed to update user count:', userErr);
+                    // This is critical for limit logic, but shouldn't fail the "Add" operation for the user
+                }
                 
                 const viewNow = await customConfirm(
                     'Snippet added to your library! Do you want to view it now?',
@@ -1894,8 +1958,9 @@
             try {
                 await deleteDoc(doc(db, 'snippets', String(id)));
                 
-                // Decrement personal counter
-                if (currentUser) {
+                // Decrement personal counter (only if the user is the owner)
+                const snippet = allSnippets.find(s => s.id == id);
+                if (currentUser && snippet && snippet.authorId === currentUser.uid) {
                     const userDocRef = doc(db, 'users', currentUser.uid);
                     await updateDoc(userDocRef, { snippetCount: increment(-1) });
                 }

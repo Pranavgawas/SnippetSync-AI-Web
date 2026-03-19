@@ -20,10 +20,9 @@ service cloud.firestore {
     // --- SNIPPETS (The Sync Center) ---
     match /snippets/{snippetId} {
       
-      // READ: Owners see all their own; others see only Public.
-      allow read: if isAuthenticated() && (
-        resource.data.isPublic == true || 
-        resource.data.authorId == request.auth.uid
+      // READ: Owners see all their own; others see only Public (no auth required).
+      allow read: if resource.data.isPublic == true || (
+        isAuthenticated() && resource.data.authorId == request.auth.uid
       );
 
       // CREATE: 

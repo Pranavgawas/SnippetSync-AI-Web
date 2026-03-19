@@ -46,6 +46,15 @@
             "value": "public, max-age=3600"
           }
         ]
+      },
+      {
+        "source": "/googlebb52491c6ae5b54e.html",
+        "headers": [
+          {
+            "key": "Content-Type",
+            "value": "text/html"
+          }
+        ]
       }
     ]
   }

@@ -1,7 +1,7 @@
 // Firebase Configuration and Initialization
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, getDoc, setDoc, onSnapshot, query, where, orderBy, limit, updateDoc, deleteDoc, doc, increment, serverTimestamp, getCountFromServer } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, deleteUser } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, getDoc, setDoc, onSnapshot, query, where, orderBy, limit, updateDoc, deleteDoc, doc, increment, serverTimestamp, getCountFromServer, writeBatch } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // Your web app's Firebase configuration is in env.js
 
@@ -37,5 +37,7 @@ export {
   doc,
   increment,
   serverTimestamp,
-  getCountFromServer
+  getCountFromServer,
+  writeBatch,
+  deleteUser
 };

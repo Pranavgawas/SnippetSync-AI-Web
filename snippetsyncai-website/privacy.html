@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Privacy Policy - SnippetSyncAi</title>
+    <title>Privacy Policy - SnippetSync-AI</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="logo.png">
 </head>
 <body>
     <nav class="navbar">
@@ -20,63 +21,87 @@
     <div class="container" style="padding-top: 120px; padding-bottom: 80px; max-width: 800px;">
         <div class="section-header" style="text-align: left; margin-bottom: 40px;">
             <h2>Privacy Policy</h2>
-            <p>Last Updated: December 25, 2025</p>
+            <p>Last Updated: January 7, 2026</p>
         </div>
 
         <div style="color: var(--text-secondary); font-size: 16px;">
-            <p style="margin-bottom: 24px;">SnippetSyncAi ("we", "our", or "us") is committed to protecting your privacy. This Privacy Policy explains how our Chrome Extension and website collect, use, and disclose your information.</p>
+            <p style="margin-bottom: 24px;">SnippetSync-AI ("we," "our," or "the Service") is a productivity tool designed to help users type faster using text expansion. We take your privacy seriously. We operate on a "Local-First" architecture, meaning your personal snippets are stored on your device by default, and are only synced to our servers if you choose to use Cloud features.</p>
             
-            <h3 style="color: var(--text-primary); margin: 32px 0 16px;">1. Local-First Philosophy</h3>
-            <p style="margin-bottom: 24px;">Our core philosophy is <strong>Local-First</strong>. By default, your text data belongs to you.</p>
-            <ul style="list-style: disc; margin-left: 24px; margin-bottom: 24px;">
-                <li><strong>Private Snippets:</strong> Stored 100% locally on your device using `chrome.storage.local`. We cannot see, read, or access them.</li>
-                <li><strong>Cloud Sync (Optional):</strong> If you choose to enable Cloud Sync, your snippets are stored in Firebase Firestore with your user ID. Only you can access your private snippets.</li>
+            <h3 style="color: var(--text-primary); margin: 32px 0 16px;">1. Information We Collect</h3>
+            
+            <h4 style="color: var(--text-primary); font-size: 1.1em; margin: 24px 0 12px;">A. Information You Explicitly Provide</h4>
+            <ul style="list-style: none; padding-left: 0; margin-bottom: 24px;">
+               <li style="margin-bottom: 16px;"><strong>User Account:</strong> When you sign in with Google, we collect your email address and profile picture to authenticate you and manage your cloud synchronization.</li>
+               <li style="margin-bottom: 16px;"><strong>Snippet Content:</strong> We process the text shortcuts ("triggers") and snippet content you create.
+                   <ul style="list-style: disc; margin-left: 24px; margin-top: 8px; color: var(--text-secondary);">
+                       <li style="margin-bottom: 8px;"><strong>Local Snippets:</strong> Stored entirely on your device's browser storage. We cannot access this data.</li>
+                       <li style="margin-bottom: 8px;"><strong>Cloud Snippets:</strong> If you use "Cloud Sync" or "Community," encrypted copies of your snippets are stored in our secure database (Google Firebase).</li>
+                   </ul>
+               </li>
             </ul>
 
-            <h3 style="color: var(--text-primary); margin: 32px 0 16px;">2. Firebase Services</h3>
-            <p style="margin-bottom: 16px;">We use Google Firebase to provide authentication and database services:</p>
-            <ul style="list-style: disc; margin-left: 24px; margin-bottom: 24px;">
-                <li><strong>Firebase Authentication:</strong> Manages user login via email/password or Google Sign-In. Firebase stores your email address and authentication tokens.</li>
-                <li><strong>Firebase Firestore:</strong> Stores public community snippets and your synced private snippets (if you enable sync). Data is stored in Google Cloud servers.</li>
-                <li><strong>Firebase Privacy:</strong> Review Firebase's privacy policy at <a href="https://firebase.google.com/support/privacy" style="color: var(--primary);">firebase.google.com/support/privacy</a></li>
+            <h4 style="color: var(--text-primary); font-size: 1.1em; margin: 24px 0 12px;">B. Automatically Collected Usage Data</h4>
+             <ul style="list-style: none; padding-left: 0; margin-bottom: 24px;">
+                <li style="margin-bottom: 16px;"><strong>Productivity Stats:</strong> We track local counters of how many times you use the extension (e.g., "150 characters saved"). This calculation happens on your device.</li>
+                <li style="margin-bottom: 16px;"><strong>License Validation:</strong> To verify Pro accounts, we may send a non-identifying hash of your license key to our payment providers (Lemon Squeezy).</li>
             </ul>
 
-            <h3 style="color: var(--text-primary); margin: 32px 0 16px;">3. Community & Public Data</h3>
-            <p style="margin-bottom: 24px;"><strong>Public Snippets:</strong> If you explicitly choose to "Publish" a snippet to the Community Hub:</p>
+            <h3 style="color: var(--text-primary); margin: 32px 0 16px;">2. How We Handle Your Data (Permissions)</h3>
+            <p style="margin-bottom: 16px;">The Chrome Web Store requires us to declare specific permissions. Here is exactly how we use them:</p>
+            
+            <div style="margin-bottom: 24px;">
+                <p style="margin-bottom: 8px; font-weight: 600; color: var(--text-primary);">Read and change all your data on the websites you visit (&lt;all_urls&gt;):</p>
+                <ul style="list-style: disc; margin-left: 24px; margin-bottom: 16px;">
+                    <li style="margin-bottom: 8px;"><strong>Why we need it:</strong> This is strictly required for the Text Expansion feature. The extension must monitor your keystrokes locally to detect when you type a trigger (e.g., /email) so it can instantly replace it with your snippet.</li>
+                    <li><strong>Our Promise:</strong> We do NOT store, track, or transmit your browsing history, passwords, or page content. The text expansion logic runs entirely within your browser's memory.</li>
+                </ul>
+            </div>
+
+            <p style="margin-bottom: 12px;"><strong>Storage:</strong> Used to save your settings and snippets on your local device.</p>
+            <p style="margin-bottom: 24px;"><strong>Identity:</strong> Used solely for "Sign in with Google" functionality.</p>
+
+            <h3 style="color: var(--text-primary); margin: 32px 0 16px;">3. Data Sharing and Third Parties</h3>
+            <p style="margin-bottom: 16px;">We do not sell your data. We share data only with trusted infrastructure providers required to run the service:</p>
             <ul style="list-style: disc; margin-left: 24px; margin-bottom: 24px;">
-                <li>That snippet becomes publicly accessible to all logged-in users.</li>
-                <li>We store your display name (from your account) as the author.</li>
-                <li>You grant us a license to display, distribute, and allow others to install these snippets.</li>
-                <li><strong>Warning:</strong> Do not publish private keys, passwords, or personal data in public snippets.</li>
+                <li style="margin-bottom: 8px;"><strong>Google Firebase:</strong> Used for secure authentication and cloud database hosting. Read Google's Privacy Policy.</li>
+                <li style="margin-bottom: 8px;"><strong>Lemon Squeezy:</strong> Used to process payments and validate licenses. We do not store your credit card information; it is handled directly by these secure providers.</li>
             </ul>
 
-            <h3 style="color: var(--text-primary); margin: 32px 0 16px;">4. Data Collection</h3>
-            <p style="margin-bottom: 24px;">We collect minimal data:</p>
-            <ul style="list-style: disc; margin-left: 24px; margin-bottom: 24px;">
-                <li><strong>Account Info:</strong> Email address and display name (via Firebase Auth).</li>
-                <li><strong>Usage Stats:</strong> Anonymous aggregate data (e.g., "Total public snippets") to improve the service.</li>
-                <li><strong>No Keystroke Logging:</strong> We do not track your typing or browsing history.</li>
-            </ul>
+            <h3 style="color: var(--text-primary); margin: 32px 0 16px;">4. Community & Public Data</h3>
+             <ul style="list-style: disc; margin-left: 24px; margin-bottom: 24px;">
+                <li style="margin-bottom: 8px;"><strong>Private by Default:</strong> All snippets you create are private unless you explicitly click the "Share to Community" button.</li>
+                <li style="margin-bottom: 8px;"><strong>Public Snippets:</strong> If you choose to publish a snippet to the Community, it becomes publicly accessible to other users. You can unpublish/delete these at any time.</li>
+             </ul>
 
-            <h3 style="color: var(--text-primary); margin: 32px 0 16px;">5. Data Security</h3>
-            <p style="margin-bottom: 24px;">Your data is protected by Firebase's industry-standard security measures, including encryption in transit (HTTPS) and at rest. You control your data and can delete your account at any time.</p>
+            <h3 style="color: var(--text-primary); margin: 32px 0 16px;">5. AI Features (Gemini Nano)</h3>
+             <ul style="list-style: disc; margin-left: 24px; margin-bottom: 24px;">
+                <li style="margin-bottom: 8px;"><strong>Local Processing:</strong> Our "Magic Rewrite" feature uses Chrome's built-in AI (Gemini Nano) which runs locally on your device.</li>
+                <li style="margin-bottom: 8px;"><strong>Privacy:</strong> The text you send to be rewritten is processed by your computer's CPU/GPU and is not sent to our servers or Google's cloud for training.</li>
+             </ul>
 
-            <h3 style="color: var(--text-primary); margin: 32px 0 16px;">6. Your Rights</h3>
-            <ul style="list-style: disc; margin-left: 24px; margin-bottom: 24px;">
-                <li>You can delete your account and all associated data at any time.</li>
-                <li>You can export your snippets from the extension.</li>
-                <li>You can unpublish community snippets you've shared.</li>
-            </ul>
+            <h3 style="color: var(--text-primary); margin: 32px 0 16px;">6. Data Retention & Deletion</h3>
+             <ul style="list-style: disc; margin-left: 24px; margin-bottom: 24px;">
+                <li style="margin-bottom: 8px;"><strong>Control:</strong> You can delete any snippet at any time. Deleting a snippet in the extension removes it from your local device. Deleting it from the Community website removes it from our servers.</li>
+                <li style="margin-bottom: 8px;"><strong>Account Deletion:</strong> You can permanently delete your account and all associated data (including cloud snippets and profile information) instantly. Go to your <strong>Profile Page</strong> on our website, scroll to the "Danger Zone" at the bottom, and click "Delete Account". This action is irreversible.</li>
+             </ul>
 
-            <h3 style="color: var(--text-primary); margin: 32px 0 16px;">7. Contact</h3>
-            <p>If you have questions, contact us at <a href="mailto:hello@snippetsyncai.app" style="color: var(--primary);">hello@snippetsyncai.app</a></p>
+            <h3 style="color: var(--text-primary); margin: 32px 0 16px;">7. Children’s Privacy</h3>
+            <p style="margin-bottom: 24px;">The Service is not intended for children under 13. We do not knowingly collect data from children.</p>
+
+            <h3 style="color: var(--text-primary); margin: 32px 0 16px;">8. Contact Us</h3>
+                <p style="margin-bottom: 16px;">If you have questions about this policy or need support:</p>
+                <p style="margin-bottom: 4px;"><strong>Discord Community:</strong> <a href="https://discord.gg/cDH9Z6Fg" style="color: var(--primary);" target="_blank">Join for instant support</a> (Recommended)</p>
+
+                <p><strong>Developer:</strong> Pranav Gawas</p>
+            </div>
+
         </div>
     </div>
 
     <footer class="footer">
         <div class="container">
             <div class="footer-bottom">
-                <p>© 2025 SnippetSyncAi. All rights reserved.</p>
+                <p>© 2026 SnippetSync-AI. All rights reserved.</p>
             </div>
         </div>
     </footer>

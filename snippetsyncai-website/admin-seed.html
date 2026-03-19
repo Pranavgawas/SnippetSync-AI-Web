@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Seeder - SnippetSync</title>
+    <script src="env.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp, writeBatch, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // --- DATA PACKS ---
+        const SNIPPET_PACKS = {
+            "gemini_prompts": [
+                { title: "Gemini: Complex Reasoning", content: "Act as a senior engineer. Break down the following problem into first principles and suggest 3 possible architectural solutions, highlighting trade-offs for each:\\n\\n[PROBLEM]", tags: ["ai", "gemini", "engineering"] },
+                { title: "Gemini: Code Review", content: "Review the following code for security vulnerabilities, performance bottlenecks, and style inconsistencies. Suggest specific refactors:\\n\\n```\\n[CODE]\\n```", tags: ["ai", "gemini", "coding"] },
+                { title: "Gemini: Explain Like I'm 5", content: "Explain the concept of [TOPIC] to a 5-year-old using simple analogies.", tags: ["ai", "gemini", "learning"] },
+                { title: "Gemini: Data Analysis", content: "Analyze this dataset and give me top 5 insights, trends, and anomalies. Format the output as a markdown table.", tags: ["ai", "gemini", "data"] },
+                { title: "Gemini: System Design", content: "Design a scalable system for [APP_IDEA]. Include database schema, API endpoints, and key technologies.", tags: ["ai", "gemini", "design"] }
+            ],
+            "chatgpt_prompts": [
+                { title: "GPT: Blog Post Generator", content: "Write a high-converting, SEO-optimized blog post about [TOPIC]. Include a catchy hook, 3 main subheadings, and a call to action.", tags: ["ai", "gpt", "marketing"] },
+                { title: "GPT: Viral Tweet Thread", content: "Turn the following text into a viral Twitter thread. Use strong hooks, short sentences, and emojis.\\n\\n[TEXT]", tags: ["ai", "gpt", "social"] },
+                { title: "GPT: Email Polisher", content: "Rewrite this email to sound more professional but friendly. Remove passive voice.\\n\\n[EMAIL]", tags: ["ai", "gpt", "email"] },
+                { title: "GPT: Unit Test Writer", content: "Write comprehensive Jest unit tests for the following React component. Include edge cases.", tags: ["ai", "gpt", "coding"] },
+                { title: "GPT: Resume Improver", content: "Rewrite this resume bullet point to emphasize impact and metrics:\\n\\n[BULLET_POINT]", tags: ["ai", "gpt", "career"] }
+            ],
+            "react_hooks": [
+                { title: "React: useAuth Hook", content: "const useAuth = () => {\\n  const context = useContext(AuthContext);\\n  if (!context) throw new Error('useAuth must be used within AuthProvider');\\n  return context;\\n};", tags: ["react", "coding", "hooks"] },
+                { title: "React: useDebounce", content: "function useDebounce(value, delay) {\\n  const [debouncedValue, setDebouncedValue] = useState(value);\\n  useEffect(() => {\\n    const handler = setTimeout(() => setDebouncedValue(value), delay);\\n    return () => clearTimeout(handler);\\n  }, [value, delay]);\\n  return debouncedValue;\\n}", tags: ["react", "coding", "hooks"] },
+                { title: "React: useEffect Once", content: "useEffect(() => {\\n  // Code runs once on mount\\n  return () => {\\n    // Cleanup\\n  };\\n}, []);", tags: ["react", "coding"] }
+            ],
+            "cold_email": [
+                { title: "Sales: Cold Outreach V1", content: "Hi {name},\\n\\nI noticed you're using [Competitor]. We help companies like yours save 30% on [Expense].\\n\\nOpen to a 5-min chat?\\n\\nBest,\\n[My Name]", tags: ["sales", "email"] },
+                { title: "Sales: Follow Up", content: "Hi {name},\\n\\nBumping this to the top of your inbox. Did you get a chance to see my last email?\\n\\nBest,", tags: ["sales", "email"] },
+                { title: "Sales: Breakup Email", content: "Hi {name},\\n\\nI haven't heard back, so I assume this isn't a priority right now. I'll close your file for now.\\n\\nFeel free to reach out if things change!", tags: ["sales", "email"] }
+            ],
+            "git_commands": [
+                { title: "Git: Undo Last Commit", content: "git reset --soft HEAD~1", tags: ["git", "dev"] },
+                { title: "Git: Delete Local Branch", content: "git branch -d [branch_name]", tags: ["git", "dev"] },
+                { title: "Git: Discard Changes", content: "git checkout -- .", tags: ["git", "dev"] },
+                { title: "Git: Log One Line", content: "git log --oneline --graph --decorate", tags: ["git", "dev"] }
+            ],
+            "sql_queries": [
+                { title: "SQL: Select Top 10", content: "SELECT TOP 10 * FROM [table] ORDER BY created_at DESC;", tags: ["sql", "data"] },
+                { title: "SQL: Group By Count", content: "SELECT category, COUNT(*) FROM [table] GROUP BY category HAVING COUNT(*) > 5;", tags: ["sql", "data"] },
+                { title: "SQL: Join Tables", content: "SELECT a.name, b.order_id FROM users a JOIN orders b ON a.id = b.user_id WHERE a.status = 'active';", tags: ["sql", "data"] }
+            ],
+            "customer_support": [
+                { title: "Support: Empathy Reply", content: "I completely understand how frustrating this must be for you, {name}. I'm going to do my best to help you sort this out right away.", tags: ["support", "service"] },
+                { title: "Support: Feature Request", content: "Thanks for the suggestion! I've passed this along to our product team. While I can't promise a timeline, we love feedback like this.", tags: ["support", "service"] },
+                { title: "Support: Refund Processed", content: "I've gone ahead and processed a full refund for you. You should see it within 5-10 business days depending on your bank.", tags: ["support", "service"] }
+            ],
+            "hr_recruiting": [
+                { title: "HR: Interview Invite", content: "Hi {name},\\n\\nWe were impressed by your application and would love to schedule a 30-min intro call. Are you free any of these times?\\n\\n[LINK]", tags: ["hr", "hiring"] },
+                { title: "HR: Rejection (Polite)", content: "Hi {name},\\n\\nThank you for applying. While your background is impressive, we've decided to move forward with other candidates who more closely match our specific needs for this role.", tags: ["hr", "hiring"] },
+                { title: "HR: Offer Letter Intro", content: "We are thrilled to offer you the position of [Role] at [Company]! Attached are the details of the offer.", tags: ["hr", "hiring"] }
+            ]
+        };
+
+        // --- LOGIC ---
+        const statusEl = document.getElementById('status');
+        const loginPanel = document.getElementById('loginPanel');
+        const adminPanel = document.getElementById('adminPanel');
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                if (user.email === 'snipprtsyncai@gmail.com') {
+                    loginPanel.style.display = 'none';
+                    adminPanel.style.display = 'block';
+                    document.getElementById('userEmail').textContent = user.email;
+                } else {
+                    statusEl.textContent = "Error: You are logged in, but not as the Admin (snipprtsyncai@gmail.com).";
+                }
+            } else {
+                loginPanel.style.display = 'block';
+                adminPanel.style.display = 'none';
+            }
+        });
+
+        window.login = async () => {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+            } catch (e) {
+                statusEl.textContent = "Login Failed: " + e.message;
+            }
+        };
+
+        window.seedCategory = async (categoryKey) => {
+            const user = auth.currentUser;
+            if (!user) return;
+
+            const pack = SNIPPET_PACKS[categoryKey];
+            if (!pack) return;
+
+            statusEl.textContent = `Seeding ${pack.length} snippets for ${categoryKey}...`;
+            
+            // Batch write
+            const batch = writeBatch(db);
+            
+            pack.forEach(item => {
+                const newRef = doc(collection(db, "snippets"));
+                batch.set(newRef, {
+                    title: item.title,
+                    content: item.content,
+                    tags: item.tags,
+                    folderId: "public_pack_" + categoryKey, // logical grouping
+                    isPublic: true,
+                    uid: user.uid,
+                    authorName: "SnippetSync Official",
+                    createdAt: serverTimestamp(),
+                    description: "Official Snippet Pack",
+                    copyCount: 0,
+                    type: "text"
+                });
+            });
+
+            try {
+                await batch.commit();
+                statusEl.textContent = `✅ Success! Added ${pack.length} snippets to '${categoryKey}'.`;
+            } catch (e) {
+                statusEl.textContent = "❌ Error seeding: " + e.message;
+                console.error(e);
+            }
+        };
+
+        window.seedAll = async () => {
+            for (const key of Object.keys(SNIPPET_PACKS)) {
+                await window.seedCategory(key);
+            }
+            statusEl.textContent = "✅✅ ALL PACKS SEEDED SUCCESSFULLY!";
+        };
+    </script>
+    <style>
+        body { font-family: sans-serif; background: #1a1a1a; color: white; padding: 40px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        input { padding: 10px; margin: 5px; width: 100%; max-width: 300px; }
+        button { padding: 10px 20px; cursor: pointer; background: #8b5cf6; color: white; border: none; border-radius: 4px; font-weight: bold; margin: 5px; }
+        button:hover { background: #7c3aed; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-top: 20px; }
+        .card { background: #2a2a2a; padding: 15px; border-radius: 8px; text-align: center; }
+        #status { margin-top: 20px; padding: 10px; background: #333; border-radius: 4px; min-height: 20px; color: #4ade80; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Database Seeder</h1>
+        <div id="status">Waiting for action...</div>
+
+        <div id="loginPanel" style="display:none;">
+            <h3>Admin Login Required</h3>
+            <input type="email" id="email" value="snipprtsyncai@gmail.com" placeholder="Email"><br>
+            <input type="password" id="password" placeholder="Password"><br>
+            <button onclick="login()">Login</button>
+        </div>
+
+        <div id="adminPanel" style="display:none;">
+            <p>Logged in as: <span id="userEmail" style="color: #8b5cf6;"></span></p>
+            
+            <div style="background: #333; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                <h3>🚀 Bulk Actions</h3>
+                <button onclick="seedAll()" style="background: #ef4444; font-size: 1.2em;">SEED ALL PACKS (Caution)</button>
+            </div>
+
+            <h3>Individual Packs</h3>
+            <div class="grid">
+                <div class="card">
+                    <h4>Gemini AI</h4>
+                    <button onclick="seedCategory('gemini_prompts')">Seed Pack</button>
+                </div>
+                <div class="card">
+                    <h4>ChatGPT</h4>
+                    <button onclick="seedCategory('chatgpt_prompts')">Seed Pack</button>
+                </div>
+                <div class="card">
+                    <h4>React Hooks</h4>
+                    <button onclick="seedCategory('react_hooks')">Seed Pack</button>
+                </div>
+                <div class="card">
+                    <h4>Cold Email</h4>
+                    <button onclick="seedCategory('cold_email')">Seed Pack</button>
+                </div>
+                <div class="card">
+                    <h4>Git Commands</h4>
+                    <button onclick="seedCategory('git_commands')">Seed Pack</button>
+                </div>
+                <div class="card">
+                    <h4>SQL Queries</h4>
+                    <button onclick="seedCategory('sql_queries')">Seed Pack</button>
+                </div>
+                <div class="card">
+                    <h4>Customer Support</h4>
+                    <button onclick="seedCategory('customer_support')">Seed Pack</button>
+                </div>
+                <div class="card">
+                    <h4>HR / Recruiting</h4>
+                    <button onclick="seedCategory('hr_recruiting')">Seed Pack</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

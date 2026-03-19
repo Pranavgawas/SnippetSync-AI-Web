@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Profile - SnippetSyncAi</title>
+    <link rel="icon" type="image/png" href="logo.png">
     <meta name="description" content="View user profile and their public snippets on SnippetSyncAi.">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://snippetsync-ai-web-22477-cf36a.web.app/profile.html">
@@ -898,6 +899,7 @@
             </button>
             <div class="nav-links">
                 <a href="community.html" style="color: var(--text-muted);">← Back to Community</a>
+                <a href="https://chromewebstore.google.com/detail/snippetsync-ai/gbdbinckkcpfhdlboopmlahpbcegfple" class="nav-cta" style="padding: 8px 16px; background: var(--primary); color: white; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 500;">Add to Chrome - Free</a>
                 <div class="user-info" id="userInfo" style="display: none;">
                     <div class="user-avatar-small" id="userAvatar" style="cursor: pointer;" title="View My Profile">U</div>
                     <button id="logoutBtn" class="logout-btn">Logout</button>
@@ -993,7 +995,7 @@
     </footer>
 
     <script type="module">
-        import { auth, db, collection, query, where, getDocs, getDoc, doc, addDoc, serverTimestamp, increment, deleteDoc, updateDoc, setDoc, onAuthStateChanged, signInWithPopup, googleProvider, signOut } from './firebase-config.js';
+        import { auth, db, collection, query, where, getDocs, getDoc, doc, addDoc, serverTimestamp, increment, deleteDoc, updateDoc, setDoc, onAuthStateChanged, signInWithPopup, googleProvider, signOut, writeBatch, deleteUser } from './firebase-config.js';
         
         const urlParams = new URLSearchParams(window.location.search);
         const userId = urlParams.get('u');
@@ -1064,7 +1066,8 @@
 
                 const snapshot = await getDocs(q);
                 
-                allSnippets = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                // Ensure the Firestore Document ID is used as the 'id' for database operations
+                allSnippets = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
                 
                 // Sort by highest download count (Rankwise)
                 allSnippets.sort((a, b) => (b.installCount || 0) - (a.installCount || 0));
@@ -1077,6 +1080,99 @@
                 document.getElementById('snippetCount').textContent = publicCount;
                 document.getElementById('privateSnippetCount').textContent = privateCount;
                 document.getElementById('totalDownloads').textContent = totalDownloads;
+                
+                // Check if the current user is the owner of this profile
+                const isOwner = currentUser && currentUser.uid === userId;
+                
+                console.log('Ownership Check:', {
+                    currentUserUid: currentUser.uid,
+                    profileUserId: userId,
+                    isMatch: currentUser.uid === userId
+                });
+
+                if (isOwner) {
+                    // Assuming an 'editProfileBtn' exists somewhere in the HTML
+                    // document.getElementById('editProfileBtn').style.display = 'block';
+                    
+                    // Add Danger Zone for Owner (Check if already exists to avoid duplicates)
+                    if (!document.getElementById('dangerZoneContainer')) {
+                        const dangerZone = document.createElement('div');
+                        dangerZone.id = 'dangerZoneContainer'; // Add ID for tracking
+                        dangerZone.className = 'share-link-container'; // Reusing styling
+                        dangerZone.style.borderColor = 'rgba(239, 68, 68, 0.3)'; // Red border
+                        dangerZone.style.marginTop = '40px';
+                        dangerZone.innerHTML = `
+                            <div class="share-link-label" style="color: #ef4444;">Danger Zone</div>
+                            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+                                Permanently delete your account and all associated snippets. This action cannot be undone.
+                            </p>
+                            <button id="deleteAccountBtn" class="btn-secondary" style="color: #ef4444; border-color: rgba(239, 68, 68, 0.3); width: 100%;">
+                                Delete Account
+                            </button>
+                        `;
+
+                        // Append specifically after the Share Link container
+                        const shareContainer = document.querySelector('.share-link-container');
+                        if (shareContainer && shareContainer.parentNode) {
+                            shareContainer.parentNode.appendChild(dangerZone);
+                        } else {
+                            console.warn('Share container not found, appending to first .container');
+                            document.querySelector('.container').appendChild(dangerZone);
+                        }
+                        
+                        // Delete Account Logic
+                        document.getElementById('deleteAccountBtn').addEventListener('click', async () => {
+                            const confirmed = await customConfirm(
+                                'Are you absolutely sure? This will permanently delete your account and ALL your snippets. This cannot be undone.', 
+                                'Delete Account', 
+                                true
+                            );
+                            
+                            if (confirmed) {
+                                try {
+                                    showToast('Deleting account...', 'info');
+                                    
+                                    // 1. Delete all user snippets
+                                    const q = query(collection(db, 'snippets'), where('authorId', '==', currentUser.uid));
+                                    const snapshot = await getDocs(q);
+                                    const batch = writeBatch(db);
+                                    snapshot.docs.forEach(doc => {
+                                        batch.delete(doc.ref);
+                                    });
+                                    await batch.commit();
+                                    console.log('Snippets deleted.');
+
+                                    // 2. Delete user profile
+                                    await deleteDoc(doc(db, 'users', currentUser.uid));
+                                    console.log('User profile deleted.');
+
+                                    // 3. Delete Auth Account
+                                    await deleteUser(currentUser);
+                                    console.log('Auth account deleted.');
+
+                                    showToast('Account deleted successfully.', 'success');
+                                    setTimeout(() => window.location.href = 'index.html', 1500);
+                                    
+                                } catch (error) {
+                                    console.error('Delete account error:', error);
+                                    if (error.code === 'auth/requires-recent-login') {
+                                        showToast('Please sign in again to verify deletion.', 'warning');
+                                        await signOut(auth);
+                                    } else {
+                                        showToast('Failed to delete account: ' + error.message, 'error');
+                                    }
+                                }
+                            }
+                        });
+                    }
+                } else {
+                    // document.getElementById('editProfileBtn').style.display = 'none';
+                    // Ensure Danger Zone is removed if it exists and user is not owner
+                    const existingDangerZone = document.getElementById('dangerZoneContainer');
+                    if (existingDangerZone) {
+                        existingDangerZone.remove();
+                    }
+                }
                 
                 // Setup Search Listener
                 const searchInput = document.getElementById('profileSearchInput');
@@ -1119,7 +1215,8 @@
             });
             
             // Logout Logic
-            document.getElementById('logoutBtn').addEventListener('click', async () => {
+            document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+                e.preventDefault();
                 try {
                     await signOut(auth);
                     window.location.reload();
@@ -1555,7 +1652,6 @@
             }
         });
         
-        loadProfile();
         // Initialize Modals and Forms
         const submissionDialog = document.getElementById('submissionDialog');
         const closeDialogBtn = document.getElementById('closeDialog');
@@ -1696,11 +1792,14 @@
              try {
                  await deleteDoc(doc(db, 'snippets', id));
                  
-                 // Update user count
-                 const userDocRef = doc(db, 'users', currentUser.uid);
-                 await updateDoc(userDocRef, {
-                     snippetCount: increment(-1)
-                 });
+                 // Update user count (only if the user is the owner)
+                 const snippet = allSnippets.find(s => s.id === id);
+                 if (currentUser && snippet && snippet.authorId === currentUser.uid) {
+                     const userDocRef = doc(db, 'users', currentUser.uid);
+                     await updateDoc(userDocRef, {
+                         snippetCount: increment(-1)
+                     });
+                 }
                  
                  showToast('Snippet deleted successfully', 'success');
                  loadProfile(); 
