@@ -1,3 +1,4 @@
+'use strict';
 const firebaseConfig = {
   apiKey: "AIzaSyA8LWwPniF_vnf9P3-CDSInoH_sVqfs-DA",
   authDomain: "snippetsync-ai-web-22477-cf36a.firebaseapp.com",
